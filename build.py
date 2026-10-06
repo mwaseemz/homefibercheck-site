@@ -1,0 +1,555 @@
+#!/usr/bin/env python3
+"""Builds homefibercheck.live: neutral home page + one page per fiber provider.
+
+Operated by E Market Hub LLC (Google Ads account 435-781-7658, tag AW-18442869490).
+Ads: "Fiber - Calls - Search" campaign; Kinetic and EarthLink ad groups land on /kinetic/ and /earthlink/.
+Rules kept on every page: independent-agent disclosure, "new service only" + the provider's own support
+number for existing customers (data-no-track, so call tracking and conversions ignore it), no service-area lists.
+Run: python3 build.py
+"""
+import pathlib
+
+HERE = pathlib.Path(__file__).resolve().parent
+AW = 'AW-18442869490'
+CALL_LABEL = 'pBwqCPuzrfMcEPK1n9pE'     # Calls from website (60s+), forwarding-number swap
+TAP_LABEL = 'VBbuCP2604IdEPK1n9pE'      # Tap to call (website)
+FORM_LABEL = ''                         # Callback form lead (set once the conversion action exists)
+DISPLAY, TEL = '(888) 725-3056', '+18887253056'
+
+PHONE_SVG = ('<svg class="ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" '
+             'stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 '
+             '2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 '
+             '2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>')
+
+BRANDS = {
+    'kinetic': dict(
+        name='Kinetic', mark='Kinetic&reg;', role='authorized agent', Role='Authorized Agent', owner='Windstream',
+        logo='kinetic-authorized-agent.png', logo_white='kinetic-authorized-agent-white.png', lw=886, lh=284,
+        support='1-800-347-1991', support_tel='+18003471991', site='gokinetic.com',
+        hero='#0B0E3F', acc='#2FBF71', acc_dark='#25A862', acc_soft='#E4F7EC', acc_ink='#0B7A44', glow='4,178,224', glow2='122,38,92',
+        title='Kinetic Fiber Internet — Check Your Address | Kinetic Authorized Agent',
+        h1='Kinetic Fiber Internet. <em>Check your address in one call.</em>',
+        lead=('Kinetic is building fiber street by street. Call a Kinetic authorized agent and we\'ll check whether Kinetic Fiber '
+              'reaches your home, explain the plans and price for your address, and place your order on the same call.'),
+        perks=['No data caps', 'No annual contract', 'Local technicians set up your Wi-Fi', 'Ask about current offers'],
+        why_title='A fiber connection built for today\'s homes',
+        why_sub='Kinetic Fiber brings fiber-optic cable to your home for faster, more reliable internet than older copper lines.',
+        why=[('Fast upload speeds', 'Fiber uploads far faster than cable &mdash; great for video calls, cloud backups, gaming and big files.'),
+             ('No data caps', 'Stream, game and work from home without watching a monthly allowance.'),
+             ('No annual contract', 'Month-to-month service. Your agent confirms every term before you order.'),
+             ('Whole-home Wi-Fi', 'Kinetic technicians install your service and set up your home Wi-Fi to reduce dead spots.')],
+        plans=[('Fiber 300', '300', 'Mbps', 'Streaming and video calls for most households', False),
+               ('Fiber 1 Gig', '1', 'Gig', 'Busy homes with dozens of devices', True),
+               ('Fiber 2 Gig', '2', 'Gig', 'Large smart homes and heavy uploads', False)],
+        plans_note='Speeds are maximum wired speeds; actual speeds vary. Higher speeds are available in select areas. Plans, pricing, offers and equipment are set by Kinetic and vary by address.',
+        callout='Know Kinetic as <strong>Windstream</strong>? Kinetic is Windstream\'s home internet brand &mdash; call and we\'ll check fiber at your address.',
+        faq_extra=('Is Kinetic the same as Windstream?', 'Yes. Kinetic is the home internet brand of Windstream. We can check whether Kinetic Fiber has reached your address yet.'),
+        path='kinetic',
+    ),
+    'earthlink': dict(
+        name='EarthLink', mark='EarthLink&reg;', role='authorized reseller', Role='Authorized Reseller', owner='EarthLink',
+        logo='earthlink-authorized-reseller.png', logo_white='earthlink-authorized-reseller-white.png', lw=780, lh=190,
+        support='1-888-327-8454', support_tel='+18883278454', site='earthlink.net',
+        hero='#25292E', acc='#F7941D', acc_dark='#E58410', acc_soft='#FEF0DD', acc_ink='#B4530A', glow='247,148,29', glow2='255,255,255',
+        title='EarthLink Fiber Internet — Check Your Address | EarthLink Authorized Reseller',
+        h1='EarthLink Fiber Internet. <em>Check your address in one call.</em>',
+        lead=('Call an EarthLink authorized reseller and we\'ll check whether EarthLink Fiber is available at your home, explain the '
+              'plans and price for your address, and place your order on the same call.'),
+        perks=['Fiber-optic speeds', 'No data caps', 'Wi-Fi equipment available', 'Ask about current offers'],
+        why_title='Fiber internet from a name you know',
+        why_sub='EarthLink Fiber delivers fiber-optic speeds over high-capacity networks, with EarthLink service and support.',
+        why=[('Fast upload speeds', 'Fiber uploads far faster than cable &mdash; great for video calls, cloud backups, gaming and big files.'),
+             ('No data caps', 'Stream, game and work from home without watching a monthly allowance.'),
+             ('Clear terms', 'Your agent explains the monthly price, any offers and the equipment before you order.'),
+             ('EarthLink support', 'Once you\'re connected, EarthLink handles your service, billing and support.')],
+        plans=[('Fiber 300', '300', 'Mbps', 'Streaming and video calls for most households', False),
+               ('Fiber 1 Gig', '1', 'Gig', 'Busy homes with dozens of devices', True),
+               ('Fiber Multi-Gig', '2+', 'Gig', 'Large smart homes, creators and gamers', False)],
+        plans_note='Speeds are maximum wired speeds; actual speeds vary. Multi-gig plans are available in select areas. Plans, pricing, offers and equipment are set by EarthLink and vary by address.',
+        callout='Looking for <strong>fiber</strong>, not satellite or 5G? Call and we\'ll check EarthLink Fiber at your exact address.',
+        faq_extra=('Do you sell EarthLink 5G or satellite internet?', 'This line handles new EarthLink Fiber orders. We\'ll check fiber availability at your address on the call.'),
+        path='earthlink',
+    ),
+}
+
+
+def tracking_js():
+    return f'''<!-- Google tag (gtag.js) + Google Ads call tracking - account E Market Hub LLC (435-781-7658) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={AW}"></script>
+<script>
+  var AW_ID = '{AW}';
+  var CALL_DISPLAY = '{DISPLAY}';
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){{dataLayer.push(arguments);}}
+  gtag('js', new Date());
+  gtag('config', AW_ID);
+  // "Calls from website (60s+)": Google forwarding number swap for ad visitors
+  gtag('config', AW_ID + '/{CALL_LABEL}', {{
+    'phone_conversion_number': CALL_DISPLAY,
+    'phone_conversion_callback': function(formatted_number, mobile_number) {{
+      var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+      var nodes = [];
+      while (walker.nextNode()) {{ if (walker.currentNode.nodeValue.indexOf(CALL_DISPLAY) !== -1) nodes.push(walker.currentNode); }}
+      nodes.forEach(function(n){{ n.nodeValue = n.nodeValue.split(CALL_DISPLAY).join(formatted_number); }});
+      // Providers' own support numbers (data-no-track) must keep pointing at the provider.
+      var links = document.querySelectorAll('a[href^="tel:"]:not([data-no-track])');
+      for (var i = 0; i < links.length; i++) {{ links[i].setAttribute('href', 'tel:' + mobile_number); }}
+    }}
+  }});
+  // "Tap to call (website)": fires on taps of our number only
+  document.addEventListener('click', function (e) {{
+    var a = e.target && e.target.closest ? e.target.closest('a[href^="tel:"]:not([data-no-track])') : null;
+    if (a) {{ gtag('event', 'conversion', {{ 'send_to': AW_ID + '/{TAP_LABEL}' }}); }}
+  }}, true);
+</script>'''
+
+
+BASE_CSS = '''
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:var(--ink);background:#fff;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--acc-ink);text-decoration:none}
+  img{max-width:100%;display:block}
+  .container{max-width:1160px;margin:0 auto;padding:0 22px}
+  .center{text-align:center}
+  section{padding:76px 0}
+  h2{font-size:2.2rem;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin-bottom:14px}
+  .eyebrow{display:inline-block;color:var(--acc-ink);font-weight:800;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px}
+  .sub{color:var(--muted);font-size:1.05rem;max-width:680px;margin:0 auto 44px}
+  svg.ph{width:20px;height:20px;flex:none}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:16px 30px;border-radius:999px;font-weight:800;font-size:1.05rem;transition:transform .15s,background .15s;cursor:pointer;border:none;line-height:1.2;font-family:inherit}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-acc{background:var(--acc);color:var(--ink)}
+  .btn-acc:hover{background:var(--acc-dark)}
+  .btn-ink{background:var(--ink);color:#fff}
+  .btn-lg{padding:19px 34px;font-size:1.15rem}
+  .disclose{background:var(--soft);color:var(--ink2);font-size:.8rem;text-align:center;padding:8px 22px;border-bottom:1px solid var(--line)}
+  .disclose strong{color:var(--ink)}
+  @media(max-width:520px){.disclose{font-size:.72rem;padding:6px 14px;line-height:1.45}}
+  header{background:#fff;position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;height:78px}
+  .brand{min-width:0;display:flex;align-items:center}
+  .brand img{height:46px;width:auto;max-width:52vw;object-fit:contain}
+  .nav ul{display:flex;gap:28px;list-style:none}
+  .nav ul a{color:var(--ink);font-weight:600;font-size:.97rem}
+  .nav .call{flex:none;display:inline-flex;align-items:center;gap:8px;background:var(--acc);color:var(--ink);padding:11px 20px;border-radius:999px;font-weight:800;white-space:nowrap}
+  @media(max-width:900px){.nav ul{display:none}}
+  @media(max-width:520px){.nav{height:66px;gap:10px}.brand img{height:34px}.nav .call{padding:10px 14px;font-size:.92rem}.nav .call svg{display:none}}
+  @media(max-width:380px){.container{padding:0 16px}.brand img{height:28px}.nav .call{padding:9px 11px;font-size:.84rem}}
+  .hero{background:var(--hero);color:#fff;padding:70px 0 80px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;right:-220px;top:50%;transform:translateY(-50%);width:760px;height:760px;border-radius:50%;border:110px solid rgba(var(--glow),.12)}
+  .hero::after{content:"";position:absolute;left:-160px;bottom:-260px;width:520px;height:520px;border-radius:50%;background:rgba(var(--glow2),.12)}
+  .hero .container{display:grid;grid-template-columns:1.1fr .9fr;gap:50px;align-items:center;position:relative;z-index:2}
+  .status{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.10);border-radius:999px;padding:7px 15px;font-weight:700;font-size:.85rem;margin-bottom:20px}
+  .status::before{content:"";width:9px;height:9px;border-radius:50%;background:#fff;opacity:.85}
+  .status.on::before{background:#3DF58A;box-shadow:0 0 0 4px rgba(61,245,138,.25)}
+  .hero h1{font-size:3.1rem;font-weight:900;letter-spacing:-.03em;line-height:1.06;margin-bottom:20px}
+  .hero h1 em{font-style:normal;color:var(--acc)}
+  .hero p.lead{font-size:1.15rem;color:#D4D6E0;margin-bottom:28px;max-width:560px}
+  .hero .cta-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+  .checks{display:flex;gap:10px 24px;flex-wrap:wrap;list-style:none;font-weight:700;font-size:.97rem}
+  .checks li::before{content:"\\2713  ";color:var(--acc);font-weight:900}
+  .hero-card{background:#fff;color:var(--ink);border-radius:24px;box-shadow:0 24px 60px rgba(0,0,0,.35);padding:32px 30px;text-align:center;border-top:6px solid var(--acc)}
+  .hero-card h3{font-size:1.4rem;font-weight:800;margin-bottom:6px}
+  .hero-card p{color:var(--muted);font-size:.95rem;margin-bottom:14px}
+  .hero-card .num{display:block;font-size:2.3rem;font-weight:900;letter-spacing:-.02em;color:var(--ink);margin-bottom:12px}
+  .hero-card .btn{width:100%}
+  .new-only{display:inline-block;background:var(--acc-soft);color:var(--acc-ink);font-weight:800;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:999px;margin-bottom:10px}
+  .or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.85rem;font-weight:700;margin:18px 0 12px}
+  .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+  form.lead{text-align:left;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  form.lead .full{grid-column:1/-1}
+  form.lead label{font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:3px}
+  form.lead input,form.lead select{width:100%;padding:11px 12px;border:1px solid #CFD3DC;border-radius:10px;font:inherit;font-size:.95rem;color:var(--ink);background:#fff}
+  form.lead input:focus,form.lead select:focus{outline:2px solid var(--acc);border-color:var(--acc)}
+  form.lead .hp{position:absolute;left:-9999px}
+  form.lead .consent{font-size:.72rem;color:#80868B;line-height:1.45}
+  form.lead button{width:100%;padding:14px}
+  form.lead.sent .field,form.lead.sent button,form.lead.sent .consent{display:none}
+  .form-msg{grid-column:1/-1;font-size:.88rem;font-weight:600}
+  .form-msg.ok{color:#0B7A44;background:#E6F6EC;padding:10px 12px;border-radius:10px}
+  .form-msg.err{color:#B42318}
+  .existing{margin:16px 0 0;padding:11px 13px;background:var(--soft);border-radius:12px;font-size:.84rem;color:var(--ink2);line-height:1.45;text-align:center}
+  .existing a{font-weight:800;white-space:nowrap}
+  @media(max-width:900px){.hero{padding:40px 0 54px}.hero .container{grid-template-columns:1fr;gap:30px}.hero h1{font-size:2.25rem}.hero .cta-row .btn{width:100%}}
+  @media(max-width:420px){form.lead{grid-template-columns:1fr}}
+  .perks{background:var(--acc);color:var(--ink);padding:16px 0}
+  .perks ul{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:10px 30px;font-weight:800;font-size:.95rem}
+  .perks li::before{content:"\\2713  ";font-weight:900}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  @media(max-width:1000px){.grid4{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.grid4{grid-template-columns:1fr}}
+  .card{border:1px solid var(--line);border-radius:18px;padding:28px 24px}
+  .card h3{font-size:1.15rem;font-weight:800;margin-bottom:8px}
+  .card p{color:var(--muted);font-size:.95rem}
+  .card .dot{width:44px;height:6px;border-radius:6px;background:var(--acc);margin-bottom:16px}
+  .note{color:var(--muted);font-size:.86rem;text-align:center;max-width:780px;margin:30px auto 0}
+  .plans{background:var(--soft)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:860px){.grid3{grid-template-columns:1fr}}
+  .plan{background:#fff;border-radius:18px;padding:28px 22px 22px;border:2px solid transparent;position:relative;display:flex;flex-direction:column}
+  .plan.pop{border-color:var(--acc)}
+  .plan .badge{position:absolute;top:-14px;left:22px;background:var(--acc);color:var(--ink);font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:999px}
+  .plan .name{color:var(--acc-ink);font-weight:800;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase}
+  .plan .speed{font-size:2.4rem;font-weight:900;letter-spacing:-.03em;line-height:1.1;margin:4px 0}
+  .plan .speed small{font-size:1.05rem;font-weight:700}
+  .plan p{color:var(--muted);font-size:.92rem;margin-bottom:18px;flex:1}
+  .plan .btn{width:100%;padding:13px 10px;font-size:.95rem}
+  .callout{background:#fff;border:1px solid var(--line);border-left:6px solid var(--acc);border-radius:14px;padding:16px 22px;margin:30px auto 0;max-width:820px;text-align:center;font-weight:600}
+  .step-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  @media(max-width:900px){.step-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.step-grid{grid-template-columns:1fr}}
+  .step .n{width:46px;height:46px;border-radius:50%;background:var(--acc);color:var(--ink);font-weight:900;font-size:1.15rem;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+  .step h4{font-size:1.08rem;font-weight:800;margin-bottom:6px}
+  .step p{color:var(--muted);font-size:.94rem}
+  .faq-wrap{max-width:860px}
+  details{border-bottom:1px solid var(--line);padding:18px 4px}
+  details summary{font-weight:800;font-size:1.04rem;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px}
+  details summary::-webkit-details-marker{display:none}
+  details summary::after{content:"+";color:var(--acc-ink);font-size:1.5rem;line-height:1}
+  details[open] summary::after{content:"\\2013"}
+  details p{margin-top:10px;color:var(--muted);font-size:.97rem}
+  .band{background:var(--hero);color:#fff;text-align:center;padding:64px 0}
+  .band p{margin:0 auto 26px;color:#D4D6E0;max-width:560px}
+  .legal .box{background:var(--soft);border-radius:18px;padding:32px;margin-bottom:26px}
+  .legal h2{font-size:1.5rem}
+  .legal h3{margin:22px 0 8px;font-size:1.02rem;font-weight:800}
+  .legal p,.legal li{color:var(--muted);font-size:.9rem;margin-bottom:8px}
+  .legal ul{padding-left:22px}
+  footer.site{background:#111318;color:#B7B7BD;padding:54px 0 100px;font-size:.9rem}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1.4fr;gap:36px;margin-bottom:30px}
+  @media(max-width:900px){.foot-grid{grid-template-columns:1fr}}
+  footer.site .flogo{height:40px;width:auto;margin-bottom:14px}
+  footer.site h4{color:#fff;margin-bottom:12px;font-weight:800}
+  footer.site ul{list-style:none}
+  footer.site li{margin-bottom:8px}
+  footer.site a{color:#E6E6EA}
+  .disclaimer{border-top:1px solid rgba(255,255,255,.14);padding-top:22px;font-size:.76rem;color:#8E8E95;line-height:1.65}
+  .disclaimer p{margin-bottom:10px}
+  .sticky-call{display:none;position:fixed;bottom:0;left:0;right:0;z-index:60;background:var(--acc);color:var(--ink);padding:12px 16px calc(12px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.18);align-items:center;justify-content:center;gap:10px;font-weight:800;font-size:1.06rem;text-align:center;line-height:1.25}
+  .sticky-call small{display:block;font-weight:600;font-size:.78rem;opacity:.85}
+  @media(max-width:900px){.sticky-call{display:flex}}
+'''
+
+
+def lead_form(b):
+    return f'''<div class="or">or get a call back</div>
+      <form class="lead" novalidate>
+        <div class="field"><label for="f-name">Name</label><input id="f-name" name="name" autocomplete="name" required></div>
+        <div class="field"><label for="f-phone">Phone</label><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required></div>
+        <div class="field full"><label for="f-addr">Service address</label><input id="f-addr" name="address" autocomplete="street-address" placeholder="Street address, city" required></div>
+        <div class="field"><label for="f-zip">ZIP</label><input id="f-zip" name="zip" inputmode="numeric" autocomplete="postal-code" maxlength="5" required></div>
+        <div class="field"><label for="f-time">Best time</label><select id="f-time" name="time"><option>As soon as possible</option><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
+        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <p class="consent full">By clicking &ldquo;Call me back&rdquo;, you agree that E Market Hub LLC may call you at the number above about new {b["name"]} service, including calls placed with automated technology. Consent is not a condition of purchase. Calls may be recorded.</p>
+        <button class="btn btn-ink full" type="submit">Call me back</button>
+        <p class="form-msg" role="status" aria-live="polite"></p>
+      </form>'''
+
+
+def brand_page(key):
+    b = BRANDS[key]
+    css_vars = (f":root{{--hero:{b['hero']};--acc:{b['acc']};--acc-dark:{b['acc_dark']};--acc-soft:{b['acc_soft']};--acc-ink:{b['acc_ink']};"
+                f"--glow:{b['glow']};--glow2:{b['glow2']};--ink:#111318;--ink2:#2A2D35;--muted:#5F6368;--line:#E7E8EC;--soft:#F6F6F4}}")
+    why = ''.join(f'<div class="card"><div class="dot"></div><h3>{t}</h3><p>{d}</p></div>' for t, d in b['why'])
+    plans = ''.join(
+        f'<div class="plan{" pop" if pop else ""}">{"<span class=badge>Most popular</span>" if pop else ""}<div class="name">{n}</div>'
+        f'<div class="speed">{s} <small>{u}</small></div><p>{d}</p><a class="btn btn-acc" href="tel:{TEL}">Call for your price</a></div>'
+        for n, s, u, d, pop in b['plans'])
+    perks = ''.join(f'<li>{p}</li>' for p in b['perks'])
+    sup = f'<a href="tel:{b["support_tel"]}" data-no-track>{b["support"]}</a>'
+    form_send = f'{AW}/{FORM_LABEL}' if FORM_LABEL else ''
+    return f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="{b['hero']}">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>{b['title']}</title>
+<meta name="description" content="{b['name']} {b['role']}. Call {DISPLAY} and we'll check whether {b['name']} Fiber reaches your address, explain the plans and price, and place your order.">
+{tracking_js()}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  {css_vars}
+{BASE_CSS}
+</style>
+</head>
+<body>
+
+<div class="disclose"><strong>Independent {b['mark']} {b['role']} &mdash; new service only.</strong> Already a {b['name']} customer? For billing, outages or support call {b['name']} at {sup}.</div>
+
+<header>
+  <nav class="nav container">
+    <a class="brand" href="#top" aria-label="{b['name']} {b['Role']}"><img src="/assets/{b['logo']}" width="{b['lw']}" height="{b['lh']}" alt="{b['name']} {b['Role']}"></a>
+    <ul>
+      <li><a href="#why">Why Fiber</a></li>
+      <li><a href="#plans">Speeds</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <a class="call" href="tel:{TEL}" aria-label="Call {DISPLAY}">{PHONE_SVG}{DISPLAY}</a>
+  </nav>
+</header>
+
+<section class="hero" id="top">
+  <div class="container">
+    <div>
+      <span class="status" id="open-status">Mon&ndash;Fri, 10:30am&ndash;7:30pm ET</span>
+      <h1>{b['h1']}</h1>
+      <p class="lead">{b['lead']}</p>
+      <div class="cta-row">
+        <a class="btn btn-acc btn-lg" href="tel:{TEL}">{PHONE_SVG}Call {DISPLAY}</a>
+      </div>
+      <ul class="checks">
+        <li>Free address check</li>
+        <li>No obligation</li>
+        <li>Order placed on the call</li>
+      </ul>
+    </div>
+    <div class="hero-card">
+      <span class="new-only">New customers only</span>
+      <h3>Is {b['name']} Fiber at your address?</h3>
+      <p>Have your service address ready. Most calls take about 10 minutes.</p>
+      <a class="num" href="tel:{TEL}">{DISPLAY}</a>
+      <a class="btn btn-acc btn-lg" href="tel:{TEL}">{PHONE_SVG}Tap to Call Now</a>
+      {lead_form(b)}
+      <p class="existing">Already have {b['name']}? For billing, outages or support, call {b['name']} directly at {sup}.</p>
+    </div>
+  </div>
+</section>
+
+<div class="perks"><ul class="container">{perks}</ul></div>
+
+<section id="why">
+  <div class="container">
+    <div class="center"><span class="eyebrow">Why {b['name']} Fiber</span></div>
+    <h2 class="center">{b['why_title']}</h2>
+    <p class="sub center">{b['why_sub']}</p>
+    <div class="grid4">{why}</div>
+    <p class="note">Plan features, speeds, equipment and pricing are set by {b['name']}, vary by address and can change. Everything is confirmed on the call before you place an order.</p>
+  </div>
+</section>
+
+<section class="plans" id="plans">
+  <div class="container">
+    <div class="center"><span class="eyebrow">Speeds</span></div>
+    <h2 class="center">Pick the speed that fits your home</h2>
+    <p class="sub center">Pricing is set by {b['name']} and depends on your address, so we quote your exact monthly price &mdash; and any current offer &mdash; on the call.</p>
+    <div class="grid3">{plans}</div>
+    <div class="callout">{b['callout']}</div>
+    <p class="note">{b['plans_note']}</p>
+  </div>
+</section>
+
+<section id="how">
+  <div class="container">
+    <div class="center"><span class="eyebrow">Simple process</span></div>
+    <h2 class="center">How it works</h2>
+    <p class="sub center">From your first call to installation day.</p>
+    <div class="step-grid">
+      <div class="step"><div class="n">1</div><h4>Call us</h4><p>Dial {DISPLAY} or request a call back, and give us your service address.</p></div>
+      <div class="step"><div class="n">2</div><h4>We check {b['name']}</h4><p>We look up whether {b['name']} Fiber is available at your address and which speeds.</p></div>
+      <div class="step"><div class="n">3</div><h4>You choose</h4><p>We explain the monthly price, offer terms and equipment in plain English. You decide.</p></div>
+      <div class="step"><div class="n">4</div><h4>Get connected</h4><p>We place the order and help you pick an installation date.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="background:var(--soft)">
+  <div class="container faq-wrap">
+    <div class="center"><span class="eyebrow">FAQ</span></div>
+    <h2 class="center" style="margin-bottom:26px">Frequently asked questions</h2>
+    <details open><summary>Is this {b['name']}'s website?</summary><p>No. We are an independent {b['name']} {b['role']}. We are not {b['name']} and we are not an internet service provider. We can check availability and place new {b['name']} orders; the service itself is provided, installed, billed and supported by {b['name']}.</p></details>
+    <details><summary>Does it cost more to order through you?</summary><p>No. You get the same {b['name']} plans available at your address. We're paid by the provider when we set up a new customer, which doesn't change what you pay.</p></details>
+    <details><summary>Why don't you list prices?</summary><p>{b['name']}'s pricing and offers depend on your address and change over time. We'd rather give you the real monthly price for your home on the call than publish a number that turns out to be wrong.</p></details>
+    <details><summary>{b['faq_extra'][0]}</summary><p>{b['faq_extra'][1]}</p></details>
+    <details><summary>What if {b['name']} Fiber isn't available at my address?</summary><p>We'll tell you plainly. If fiber hasn't reached your street yet, we'll let you know rather than push you into a plan that doesn't fit.</p></details>
+    <details><summary>I'm already a {b['name']} customer and need help with my bill or service.</summary><p>We can't help with existing accounts &mdash; we only set up new service. Please contact {b['name']} directly at {sup} or through {b['site']} for billing, technical support, moves or cancellations.</p></details>
+    <details><summary>What do I need when I call?</summary><p>Just your service address and a rough idea of how your household uses the internet. Most calls take about 10 minutes.</p></details>
+  </div>
+</section>
+
+<section class="band">
+  <div class="container">
+    <h2>See if {b['name']} Fiber reaches your street</h2>
+    <p>Free address check. No obligation. Mon&ndash;Fri, 10:30am&ndash;7:30pm ET.</p>
+    <a class="btn btn-acc btn-lg" href="tel:{TEL}">{PHONE_SVG}Call {DISPLAY}</a>
+  </div>
+</section>
+
+<section class="legal" id="contact">
+  <div class="container">
+    <div class="box">
+      <h2 id="about">About Us</h2>
+      <p>Home Fiber Check is operated by E Market Hub LLC, an independent sales company and a {b['name']} {b['role']}. We help households check fiber availability and place new orders by phone. We are not an internet service provider. All service is provided, installed, billed and supported by the provider under its own terms.</p>
+      <h3>Contact Us</h3>
+      <p>Phone: {DISPLAY}<br>Hours: Monday&ndash;Friday, 10:30am&ndash;7:30pm (ET)</p>
+    </div>
+    <div class="box" id="privacy">
+      <h2>Privacy Policy</h2>
+      <p><em>Last updated: October 2026</em></p>
+      <p>E Market Hub LLC (&ldquo;we,&rdquo; &ldquo;us&rdquo;) respects your privacy. This policy explains what we collect, how we use it, and your choices.</p>
+      <h3>Information We Collect</h3>
+      <ul>
+        <li><strong>Information you give us:</strong> your name, phone number, service address and ZIP when you call us or request a call back, and the service you want.</li>
+        <li><strong>Automatic information:</strong> standard web and advertising data such as IP address, browser type, pages visited, the ad click identifier, and whether you tapped a phone number after clicking an ad. We use Google advertising and call-tracking tools, which may set cookies.</li>
+      </ul>
+      <h3>How We Use Your Information</h3>
+      <ul>
+        <li>To call you back when you ask us to, check service availability at your address and explain plan options.</li>
+        <li>To place an order on your behalf with the provider when you ask us to, and follow up about it.</li>
+        <li>To measure and improve our advertising and website.</li>
+      </ul>
+      <h3>Sharing of Information</h3>
+      <p>We share your information with the provider as needed to set up the service you order, and with vendors that help us operate (for example, call routing, form processing and advertising measurement) under confidentiality obligations. <strong>We do not sell your personal information.</strong></p>
+      <h3>Calls</h3>
+      <p>Calls to or from us may be routed through a Google call-tracking number and may be recorded for quality and training. To stop calls from us, tell the agent or call {DISPLAY} and we'll add you to our internal do-not-call list.</p>
+      <h3>Your Rights</h3>
+      <p>You may request access to, correction of, or deletion of your personal information by calling {DISPLAY}. California residents may exercise rights under the CCPA/CPRA, including the right to know, delete, and opt out of sharing.</p>
+      <h3>Children's Privacy</h3>
+      <p>Our services are intended for adults 18+. We do not knowingly collect information from children under 13.</p>
+    </div>
+    <div class="box" id="terms">
+      <h2>Terms of Service</h2>
+      <p><em>Last updated: October 2026</em></p>
+      <h3>1. Who We Are</h3>
+      <p>E Market Hub LLC is an independent {b['name']} {b['role']}. We are not a telecommunications carrier or internet service provider. Service ordered through us is provided, installed, billed and supported by {b['name']} under its own terms and conditions.</p>
+      <h3>2. No Guarantee of Availability or Pricing</h3>
+      <p>Availability, plans, pricing, speeds, equipment and offers are set by {b['name']}, vary by address and may change without notice. Final pricing and terms are confirmed at the time of order. Offers may require credit qualification, AutoPay or other provider conditions.</p>
+      <h3>3. Our Service Is Free to Consumers</h3>
+      <p>We don't charge you for checking availability or placing an order. We may receive compensation from the provider when you order service through us.</p>
+      <h3>4. Trademarks</h3>
+      <p>{b['mark']} and related marks, including the {b['name']} {b['Role']} logo, are trademarks of their owner, used here only to identify the service we are authorized to sell. Their use does not imply that {b['name']} operates this website.</p>
+      <h3>5. Limitation of Liability</h3>
+      <p>To the maximum extent permitted by law, E Market Hub LLC is not liable for the acts, omissions, services, billing or equipment of {b['name']} or any other third party, nor for indirect, incidental or consequential damages arising from use of this site.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <img class="flogo" src="/assets/{b['logo_white']}" width="{b['lw']}" height="{b['lh']}" alt="{b['name']} {b['Role']}">
+        <p>Independent {b['name']} {b['role']}. New {b['name']} Fiber orders by phone. Operated by E Market Hub LLC.</p>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul><li><a href="#privacy">Privacy Policy</a></li><li><a href="#terms">Terms of Service</a></li><li><a href="#about">About Us</a></li></ul>
+      </div>
+      <div>
+        <h4>New {b['name']} Orders</h4>
+        <ul><li><a href="tel:{TEL}">{DISPLAY}</a></li><li>Mon&ndash;Fri, 10:30am&ndash;7:30pm (ET)</li></ul>
+      </div>
+    </div>
+    <div class="disclaimer">
+      <p><strong>Independent {b['Role']} Disclosure:</strong> This website is operated by E Market Hub LLC, an independent {b['name']} {b['role']}. <strong>We are not {b['name']}</strong> and we are not an internet service provider. This website is not operated by {b['name']}; {b['name']}'s official website is {b['site']}. All service is provided, installed, billed and supported by {b['name']} under its own terms. Plans, speeds, pricing, equipment and availability are set by {b['name']}, vary by address and are subject to change.</p>
+      <p><strong>Trademarks:</strong> {b['mark']} is a registered trademark of its owner. All trademarks referenced are the property of their respective owners and are used only to identify the service we are authorized to sell.</p>
+      <p>&copy; 2026 E Market Hub LLC. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<a class="sticky-call" href="tel:{TEL}" aria-label="Call {DISPLAY}">{PHONE_SVG}<span>Call {DISPLAY}<small>Check {b['name']} Fiber at your address</small></span></a>
+
+<script>window.HFC = {{ provider: '{b['name']}', display: '{DISPLAY}', formSendTo: '{form_send}' }};</script>
+<script src="/assets/lead-config.js"></script>
+<script src="/assets/lead.js"></script>
+</body>
+</html>
+'''
+
+
+def home_page():
+    css_vars = (":root{--hero:#0F2A3D;--acc:#2DC3A4;--acc-dark:#24A98E;--acc-soft:#E2F7F2;--acc-ink:#0D7A66;--glow:45,195,164;--glow2:255,255,255;"
+                "--ink:#111318;--ink2:#2A2D35;--muted:#5F6368;--line:#E7E8EC;--soft:#F6F6F4}")
+    return f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>Home Fiber Check — Check Fiber Internet at Your Address</title>
+<meta name="description" content="Home Fiber Check is an independent authorized agent. Call {DISPLAY} and we'll check fiber internet at your address and place your order.">
+{tracking_js()}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  {css_vars}
+{BASE_CSS}
+  .wordmark{{display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.35rem;color:var(--ink);letter-spacing:-.02em}}
+  .wordmark svg{{width:34px;height:34px}}
+  .provs{{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;max-width:820px;margin:0 auto}}
+  @media(max-width:640px){{.provs{{grid-template-columns:1fr}}}}
+  .prov{{border:1px solid var(--line);border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:14px;align-items:flex-start}}
+  .prov img{{height:54px;width:auto}}
+</style>
+</head>
+<body>
+<div class="disclose"><strong>Independent authorized agent &mdash; new service only.</strong> We are not an internet service provider. Existing customers should contact their provider for billing or support.</div>
+<header>
+  <nav class="nav container">
+    <a class="wordmark" href="/"><svg viewBox="0 0 32 32" fill="none"><path d="M4 15 16 5l12 10v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" fill="#0F2A3D"/><path d="M10 23c3-6 9-6 12 0" stroke="#2DC3A4" stroke-width="2.6" stroke-linecap="round"/><circle cx="16" cy="21" r="2.2" fill="#2DC3A4"/></svg>Home Fiber Check</a>
+    <a class="call" href="tel:{TEL}">{PHONE_SVG}{DISPLAY}</a>
+  </nav>
+</header>
+<section class="hero">
+  <div class="container" style="grid-template-columns:1fr">
+    <div>
+      <span class="status" id="open-status">Mon&ndash;Fri, 10:30am&ndash;7:30pm ET</span>
+      <h1>Check fiber internet at your address. <em>One call.</em></h1>
+      <p class="lead">We're an independent authorized agent for select fiber providers. Call us with your address and we'll check fiber, explain the plans and price, and place your order.</p>
+      <div class="cta-row"><a class="btn btn-acc btn-lg" href="tel:{TEL}">{PHONE_SVG}Call {DISPLAY}</a></div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="container">
+    <div class="center"><span class="eyebrow">Choose your provider</span></div>
+    <h2 class="center" style="margin-bottom:30px">New fiber service, ordered by phone</h2>
+    <div class="provs">
+      <div class="prov"><img src="/assets/kinetic-authorized-agent.png" alt="Kinetic Authorized Agent"><p>New Kinetic Fiber service.</p><a class="btn btn-acc" href="/kinetic/">Check Kinetic Fiber</a></div>
+      <div class="prov"><img src="/assets/earthlink-authorized-reseller.png" alt="EarthLink Authorized Reseller"><p>New EarthLink Fiber service.</p><a class="btn btn-acc" href="/earthlink/">Check EarthLink Fiber</a></div>
+    </div>
+  </div>
+</section>
+<footer class="site">
+  <div class="container">
+    <div class="disclaimer">
+      <p><strong>Independent Agent Disclosure:</strong> Home Fiber Check is operated by E Market Hub LLC, an independent authorized agent/reseller. We are not an internet service provider and this website is not operated by any provider. All service is provided, installed, billed and supported by the provider under its own terms. Plans, speeds, pricing and availability vary by address.</p>
+      <p>Kinetic&reg; and EarthLink&reg; are trademarks of their respective owners, used only to identify the services we are authorized to sell.</p>
+      <p>&copy; 2026 E Market Hub LLC. All rights reserved. Phone: {DISPLAY}</p>
+    </div>
+  </div>
+</footer>
+<script>window.HFC = {{ provider: 'Home', display: '{DISPLAY}' }};</script>
+<script src="/assets/lead-config.js"></script>
+<script src="/assets/lead.js"></script>
+</body>
+</html>
+'''
+
+
+FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0F2A3D"/>'
+           '<path d="M6 16 16 8l10 8v9a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z" fill="#fff"/>'
+           '<path d="M11 23c2.6-5 7.4-5 10 0" stroke="#2DC3A4" stroke-width="2.4" stroke-linecap="round" fill="none"/>'
+           '<circle cx="16" cy="21.3" r="1.9" fill="#2DC3A4"/></svg>')
+
+if __name__ == '__main__':
+    for key, b in BRANDS.items():
+        out = HERE / b['path'] / 'index.html'
+        out.parent.mkdir(exist_ok=True)
+        out.write_text(brand_page(key), encoding='utf-8')
+        print('wrote', out.relative_to(HERE))
+    (HERE / 'index.html').write_text(home_page(), encoding='utf-8')
+    (HERE / 'favicon.svg').write_text(FAVICON, encoding='utf-8')
+    (HERE / 'CNAME').write_text('homefibercheck.live\n')
+    (HERE / 'robots.txt').write_text('User-agent: *\nDisallow: /\n')
+    (HERE / '404.html').write_text('<!DOCTYPE html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=/"><title>Home Fiber Check</title>')
+    print('wrote index.html, favicon.svg, CNAME, robots.txt, 404.html')
