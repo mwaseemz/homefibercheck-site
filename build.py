@@ -162,6 +162,7 @@ BASE_CSS = '''
   form.lead label{font-size:.78rem;font-weight:700;color:var(--ink2);display:block;margin-bottom:3px}
   form.lead input,form.lead select{width:100%;padding:11px 12px;border:1px solid #CFD3DC;border-radius:10px;font:inherit;font-size:.95rem;color:var(--ink);background:#fff}
   form.lead input:focus,form.lead select:focus{outline:2px solid var(--acc);border-color:var(--acc)}
+  form.lead [aria-invalid=true]{border-color:#B42318;background:#FEF3F2;outline-color:#B42318}
   form.lead .hp{position:absolute;left:-9999px}
   form.lead .consent{font-size:.72rem;color:#80868B;line-height:1.45}
   form.lead button{width:100%;padding:14px}
@@ -242,8 +243,8 @@ def lead_form(b):
         <div class="field"><label for="f-time">Best time</label><select id="f-time" name="time"><option>As soon as possible</option><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
         <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
         <p class="consent full">By clicking &ldquo;Call me back&rdquo;, you agree that E Market Hub LLC may call you at the number above about new {b["name"]} service, including calls placed with automated technology. Consent is not a condition of purchase. Calls may be recorded.</p>
-        <button class="btn btn-ink full" type="submit">Call me back</button>
         <p class="form-msg" role="status" aria-live="polite"></p>
+        <button class="btn btn-ink full" type="submit">Call me back</button>
       </form>'''
 
 

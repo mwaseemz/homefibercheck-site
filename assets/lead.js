@@ -27,15 +27,33 @@
   function wire(form) {
     var msg = form.querySelector('.form-msg');
     var btn = form.querySelector('button[type=submit]');
+    // Clear a field's error outline as soon as the visitor edits it.
+    form.addEventListener('input', function (e) { if (e.target.removeAttribute) e.target.removeAttribute('aria-invalid'); });
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var f = form.elements;
       if (f.website && f.website.value) return;              // honeypot
       var phone = digits(f.phone.value);
       if (phone.length === 11 && phone[0] === '1') phone = phone.slice(1);
-      if (!f.name.value.trim() || phone.length !== 10 || !f.address.value.trim() || digits(f.zip.value).length !== 5) {
+      // Name each bad field (autofill often drops in a non-US number), outline it and scroll to it,
+      // because on phones the message under the button can sit below the screen.
+      var bad = [];
+      function check(el, ok, why) {
+        if (ok) { el.removeAttribute('aria-invalid'); return; }
+        el.setAttribute('aria-invalid', 'true'); bad.push({ el: el, why: why });
+      }
+      check(f.name, !!f.name.value.trim(), 'your name');
+      check(f.phone, phone.length === 10, /^\s*\+(?!1)/.test(f.phone.value)
+        ? 'a US phone number (10 digits, e.g. 555-123-4567); we can only call US numbers'
+        : 'a 10-digit phone number');
+      check(f.address, !!f.address.value.trim(), 'your street address');
+      check(f.zip, digits(f.zip.value).length === 5, 'a 5-digit ZIP code');
+      if (bad.length) {
+        var whys = bad.map(function (b) { return b.why; });
         msg.className = 'form-msg err';
-        msg.textContent = 'Please enter your name, a 10-digit phone number, your street address and 5-digit ZIP.';
+        msg.textContent = 'Please enter ' + (whys.length > 1 ? whys.slice(0, -1).join(', ') + ' and ' + whys[whys.length - 1] : whys[0]) + '.';
+        bad[0].el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        bad[0].el.focus({ preventScroll: true });
         return;
       }
       var endpoint = window.LEAD_ENDPOINT || '';
