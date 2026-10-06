@@ -2,9 +2,9 @@
  * Home Fiber Check: "call me back" lead receiver (Google Apps Script web app).
  * Deploy: Deploy > New deployment > Web app > Execute as: Me, Who has access: Anyone.
  * Each POST from homefibercheck.live / brightspeeddealer.online adds a row to the "Home Fiber Check Leads" Sheet
- * and emails the lead to NOTIFY so an agent can call back fast.
+ * and emails the lead to everyone in NOTIFY so an agent can call back fast.
  */
-var NOTIFY = 'mwaseemzaheer@gmail.com';
+var NOTIFY = 'mwaseemzaheer@gmail.com,usamas002@gmail.com';   // comma-separated; every lead emails all of them
 var SHEET_TITLE = 'Home Fiber Check Leads';
 var HEADERS = ['Received (ET)', 'Provider', 'Name', 'Phone', 'Address', 'ZIP', 'Best time', 'Page', 'Click ID', 'Device'];
 
