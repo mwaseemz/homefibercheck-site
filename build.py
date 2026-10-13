@@ -66,8 +66,8 @@ BRANDS = {
                ('Fiber 1 Gig', '1', 'Gig', 'Busy homes with dozens of devices', True),
                ('Fiber Multi-Gig', '2+', 'Gig', 'Large smart homes, creators and gamers', False)],
         plans_note='Speeds are maximum wired speeds; actual speeds vary. Multi-gig plans are available in select areas. Plans, pricing, offers and equipment are set by EarthLink and vary by address.',
-        callout='Looking for <strong>fiber</strong>, not satellite or 5G? Call and we\'ll check EarthLink Fiber at your exact address.',
-        faq_extra=('Do you sell EarthLink 5G or satellite internet?', 'This line handles new EarthLink Fiber orders. We\'ll check fiber availability at your address on the call.'),
+        callout='No fiber at your address yet? Ask about <strong>EarthLink 5G Home Internet</strong> &mdash; we\'ll check both on the same call.',
+        faq_extra=('What if EarthLink Fiber isn\'t available at my address?', 'We check fiber first. If it hasn\'t reached your address yet, we can check EarthLink 5G Home Internet on the same call and set that up instead.'),
         path='earthlink',
     ),
 }
