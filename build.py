@@ -249,7 +249,9 @@ def lead_form(b):
       </form>'''
 
 
-def brand_page(key):
+def brand_page(key, sub=None):
+    """Full provider page (sub=None) or one of the short sitelink pages in SUBPAGES (plans, how-it-works, faq, call-back).
+    Every page keeps the disclosure bar, call button, call-back form, legal section and footer."""
     b = BRANDS[key]
     css_vars = (f":root{{--hero:{b['hero']};--acc:{b['acc']};--acc-dark:{b['acc_dark']};--acc-soft:{b['acc_soft']};--acc-ink:{b['acc_ink']};"
                 f"--glow:{b['glow']};--glow2:{b['glow2']};--ink:#111318;--ink2:#2A2D35;--muted:#5F6368;--line:#E7E8EC;--soft:#F6F6F4}}")
@@ -261,6 +263,77 @@ def brand_page(key):
     perks = ''.join(f'<li>{p}</li>' for p in b['perks'])
     sup = f'<a href="tel:{b["support_tel"]}" data-no-track>{b["support"]}</a>'
     form_send = f'{AW}/{FORM_LABEL}' if FORM_LABEL else ''
+    S = {
+        'perks': f'''<div class="perks"><ul class="container">{perks}</ul></div>
+
+''',
+        'why': f'''<section id="why">
+  <div class="container">
+    <div class="center"><span class="eyebrow">Why {b['name']} Fiber</span></div>
+    <h2 class="center">{b['why_title']}</h2>
+    <p class="sub center">{b['why_sub']}</p>
+    <div class="grid4">{why}</div>
+    <p class="note">Plan features, speeds, equipment and pricing are set by {b['name']}, vary by address and can change. Everything is confirmed on the call before you place an order.</p>
+  </div>
+</section>
+
+''',
+        'plans': f'''<section class="plans" id="plans">
+  <div class="container">
+    <div class="center"><span class="eyebrow">Speeds</span></div>
+    <h2 class="center">Pick the speed that fits your home</h2>
+    <p class="sub center">Pricing is set by {b['name']} and depends on your address, so we quote your exact monthly price &mdash; and any current offer &mdash; on the call.</p>
+    <div class="grid3">{plans}</div>
+    <div class="callout">{b['callout']}</div>
+    <p class="note">{b['plans_note']}</p>
+  </div>
+</section>
+
+''',
+        'how': f'''<section id="how">
+  <div class="container">
+    <div class="center"><span class="eyebrow">Simple process</span></div>
+    <h2 class="center">How it works</h2>
+    <p class="sub center">From your first call to installation day.</p>
+    <div class="step-grid">
+      <div class="step"><div class="n">1</div><h4>Call us</h4><p>Dial {DISPLAY} or request a call back, and give us your service address.</p></div>
+      <div class="step"><div class="n">2</div><h4>We check {b['name']}</h4><p>We look up whether {b['name']} Fiber is available at your address and which speeds.</p></div>
+      <div class="step"><div class="n">3</div><h4>You choose</h4><p>We explain the monthly price, offer terms and equipment in plain English. You decide.</p></div>
+      <div class="step"><div class="n">4</div><h4>Get connected</h4><p>We place the order and help you pick an installation date.</p></div>
+    </div>
+  </div>
+</section>
+
+''',
+        'faq': f'''<section id="faq" style="background:var(--soft)">
+  <div class="container faq-wrap">
+    <div class="center"><span class="eyebrow">FAQ</span></div>
+    <h2 class="center" style="margin-bottom:26px">Frequently asked questions</h2>
+    <details open><summary>Is this {b['name']}'s website?</summary><p>No. We are an independent {b['name']} {b['role']}. We are not {b['name']} and we are not an internet service provider. We can check availability and place new {b['name']} orders; the service itself is provided, installed, billed and supported by {b['name']}.</p></details>
+    <details><summary>Does it cost more to order through you?</summary><p>No. You get the same {b['name']} plans available at your address. We're paid by the provider when we set up a new customer, which doesn't change what you pay.</p></details>
+    <details><summary>Why don't you list prices?</summary><p>{b['name']}'s pricing and offers depend on your address and change over time. We'd rather give you the real monthly price for your home on the call than publish a number that turns out to be wrong.</p></details>
+    <details><summary>{b['faq_extra'][0]}</summary><p>{b['faq_extra'][1]}</p></details>
+    <details><summary>What if {b['name']} Fiber isn't available at my address?</summary><p>We'll tell you plainly. If fiber hasn't reached your street yet, we'll let you know rather than push you into a plan that doesn't fit.</p></details>
+    <details><summary>I'm already a {b['name']} customer and need help with my bill or service.</summary><p>We can't help with existing accounts &mdash; we only set up new service. Please contact {b['name']} directly at {sup} or through {b['site']} for billing, technical support, moves or cancellations.</p></details>
+    <details><summary>What do I need when I call?</summary><p>Just your service address and a rough idea of how your household uses the internet. Most calls take about 10 minutes.</p></details>
+  </div>
+</section>
+
+''',
+    }
+    base = f"/{b['path']}/"
+    home = '' if sub is None else base
+    if sub is None:
+        title, h1, lead = b['title'], b['h1'], b['lead']
+        desc = (f"{b['name']} {b['role']}. Call {DISPLAY} and we'll check whether {b['name']} Fiber reaches your address, "
+                f"explain the plans and price, and place your order.")
+        order = ['perks', 'why', 'plans', 'how', 'faq']
+    else:
+        sp = SUBPAGES[sub]
+        title = sp['title'].format(**b)
+        h1, lead, desc = sp['h1'].format(**b), sp['lead'].format(**b), sp['desc'].format(**b)
+        order = sp['sections']
+    sections = ''.join(S[k] for k in order)
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -269,8 +342,8 @@ def brand_page(key):
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="{b['hero']}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<title>{b['title']}</title>
-<meta name="description" content="{b['name']} {b['role']}. Call {DISPLAY} and we'll check whether {b['name']} Fiber reaches your address, explain the plans and price, and place your order.">
+<title>{title}</title>
+<meta name="description" content="{desc}">
 {tracking_js()}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -286,12 +359,12 @@ def brand_page(key):
 
 <header>
   <nav class="nav container">
-    <a class="brand" href="#top" aria-label="{b['name']} {b['Role']}"><img src="/assets/{b['logo']}" width="{b['lw']}" height="{b['lh']}" alt="{b['name']} {b['Role']}"></a>
+    <a class="brand" href="{home}#top" aria-label="{b['name']} {b['Role']}"><img src="/assets/{b['logo']}" width="{b['lw']}" height="{b['lh']}" alt="{b['name']} {b['Role']}"></a>
     <ul>
-      <li><a href="#why">Why Fiber</a></li>
-      <li><a href="#plans">Speeds</a></li>
-      <li><a href="#how">How It Works</a></li>
-      <li><a href="#faq">FAQ</a></li>
+      <li><a href="{home}#why">Why Fiber</a></li>
+      <li><a href="{base}plans/">Speeds</a></li>
+      <li><a href="{base}how-it-works/">How It Works</a></li>
+      <li><a href="{base}faq/">FAQ</a></li>
     </ul>
     <a class="call" href="tel:{TEL}" aria-label="Call {DISPLAY}">{PHONE_SVG}{DISPLAY}</a>
   </nav>
@@ -301,8 +374,8 @@ def brand_page(key):
   <div class="container">
     <div>
       <span class="status" id="open-status">Mon&ndash;Fri, 10:30am&ndash;7:30pm ET</span>
-      <h1>{b['h1']}</h1>
-      <p class="lead">{b['lead']}</p>
+      <h1>{h1}</h1>
+      <p class="lead">{lead}</p>
       <div class="cta-row">
         <a class="btn btn-acc btn-lg" href="tel:{TEL}">{PHONE_SVG}Call {DISPLAY}</a>
       </div>
@@ -325,58 +398,7 @@ def brand_page(key):
   </div>
 </section>
 
-<div class="perks"><ul class="container">{perks}</ul></div>
-
-<section id="why">
-  <div class="container">
-    <div class="center"><span class="eyebrow">Why {b['name']} Fiber</span></div>
-    <h2 class="center">{b['why_title']}</h2>
-    <p class="sub center">{b['why_sub']}</p>
-    <div class="grid4">{why}</div>
-    <p class="note">Plan features, speeds, equipment and pricing are set by {b['name']}, vary by address and can change. Everything is confirmed on the call before you place an order.</p>
-  </div>
-</section>
-
-<section class="plans" id="plans">
-  <div class="container">
-    <div class="center"><span class="eyebrow">Speeds</span></div>
-    <h2 class="center">Pick the speed that fits your home</h2>
-    <p class="sub center">Pricing is set by {b['name']} and depends on your address, so we quote your exact monthly price &mdash; and any current offer &mdash; on the call.</p>
-    <div class="grid3">{plans}</div>
-    <div class="callout">{b['callout']}</div>
-    <p class="note">{b['plans_note']}</p>
-  </div>
-</section>
-
-<section id="how">
-  <div class="container">
-    <div class="center"><span class="eyebrow">Simple process</span></div>
-    <h2 class="center">How it works</h2>
-    <p class="sub center">From your first call to installation day.</p>
-    <div class="step-grid">
-      <div class="step"><div class="n">1</div><h4>Call us</h4><p>Dial {DISPLAY} or request a call back, and give us your service address.</p></div>
-      <div class="step"><div class="n">2</div><h4>We check {b['name']}</h4><p>We look up whether {b['name']} Fiber is available at your address and which speeds.</p></div>
-      <div class="step"><div class="n">3</div><h4>You choose</h4><p>We explain the monthly price, offer terms and equipment in plain English. You decide.</p></div>
-      <div class="step"><div class="n">4</div><h4>Get connected</h4><p>We place the order and help you pick an installation date.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="faq" style="background:var(--soft)">
-  <div class="container faq-wrap">
-    <div class="center"><span class="eyebrow">FAQ</span></div>
-    <h2 class="center" style="margin-bottom:26px">Frequently asked questions</h2>
-    <details open><summary>Is this {b['name']}'s website?</summary><p>No. We are an independent {b['name']} {b['role']}. We are not {b['name']} and we are not an internet service provider. We can check availability and place new {b['name']} orders; the service itself is provided, installed, billed and supported by {b['name']}.</p></details>
-    <details><summary>Does it cost more to order through you?</summary><p>No. You get the same {b['name']} plans available at your address. We're paid by the provider when we set up a new customer, which doesn't change what you pay.</p></details>
-    <details><summary>Why don't you list prices?</summary><p>{b['name']}'s pricing and offers depend on your address and change over time. We'd rather give you the real monthly price for your home on the call than publish a number that turns out to be wrong.</p></details>
-    <details><summary>{b['faq_extra'][0]}</summary><p>{b['faq_extra'][1]}</p></details>
-    <details><summary>What if {b['name']} Fiber isn't available at my address?</summary><p>We'll tell you plainly. If fiber hasn't reached your street yet, we'll let you know rather than push you into a plan that doesn't fit.</p></details>
-    <details><summary>I'm already a {b['name']} customer and need help with my bill or service.</summary><p>We can't help with existing accounts &mdash; we only set up new service. Please contact {b['name']} directly at {sup} or through {b['site']} for billing, technical support, moves or cancellations.</p></details>
-    <details><summary>What do I need when I call?</summary><p>Just your service address and a rough idea of how your household uses the internet. Most calls take about 10 minutes.</p></details>
-  </div>
-</section>
-
-<section class="band">
+{sections}<section class="band">
   <div class="container">
     <h2>See if {b['name']} Fiber reaches your street</h2>
     <p>Free address check. No obligation. Mon&ndash;Fri, 10:30am&ndash;7:30pm ET.</p>
@@ -467,6 +489,35 @@ def brand_page(key):
 '''
 
 
+# Short pages the ad sitelinks point to (Google wants each sitelink to land on its own page).
+SUBPAGES = {
+    'plans': dict(
+        title='{name} Fiber Plans and Speeds — Call for Your Price | {name} {Role}',
+        h1='{name} Fiber plans and speeds. <em>Get your exact price in one call.</em>',
+        lead='Compare {name} Fiber speeds, then call and we\'ll quote the real monthly price and any current offer for your address.',
+        desc='{name} Fiber plans and speeds. Call and we\'ll quote the exact monthly price for your address.',
+        sections=['perks', 'plans', 'why']),
+    'how-it-works': dict(
+        title='How Ordering {name} Fiber Works | {name} {Role}',
+        h1='How ordering {name} Fiber works. <em>About 10 minutes by phone.</em>',
+        lead='Call with your service address. We check {name} Fiber at your home, explain the plans and price, and place your order on the same call.',
+        desc='How ordering {name} Fiber by phone works: address check, plan choice and installation date in about 10 minutes.',
+        sections=['perks', 'how', 'why']),
+    'faq': dict(
+        title='{name} Fiber Questions | {name} {Role}',
+        h1='{name} Fiber questions, <em>answered.</em>',
+        lead='Who we are, what it costs to order through us, and what to do if you\'re already a {name} customer.',
+        desc='Answers about ordering {name} Fiber through an independent {role}.',
+        sections=['perks', 'faq']),
+    'call-back': dict(
+        title='Request a Call Back About {name} Fiber | {name} {Role}',
+        h1='Prefer a call back? <em>We\'ll call you about {name} Fiber.</em>',
+        lead='Leave your name, number and service address in the form, and an agent will call you Mon&ndash;Fri, 10:30am&ndash;7:30pm ET.',
+        desc='Request a call back about new {name} Fiber service.',
+        sections=['perks', 'how']),
+}
+
+
 def home_page():
     css_vars = (":root{--hero:#0F2A3D;--acc:#2DC3A4;--acc-dark:#24A98E;--acc-soft:#E2F7F2;--acc-ink:#0D7A66;--glow:45,195,164;--glow2:255,255,255;"
                 "--ink:#111318;--ink2:#2A2D35;--muted:#5F6368;--line:#E7E8EC;--soft:#F6F6F4}")
@@ -550,6 +601,11 @@ if __name__ == '__main__':
         out.parent.mkdir(exist_ok=True)
         out.write_text(brand_page(key), encoding='utf-8')
         print('wrote', out.relative_to(HERE))
+        for sub in SUBPAGES:
+            sp = HERE / b['path'] / sub / 'index.html'
+            sp.parent.mkdir(exist_ok=True)
+            sp.write_text(brand_page(key, sub), encoding='utf-8')
+        print('wrote', ', '.join(f"{b['path']}/{sub}/" for sub in SUBPAGES))
     (HERE / 'index.html').write_text(home_page(), encoding='utf-8')
     (HERE / 'favicon.svg').write_text(FAVICON, encoding='utf-8')
     (HERE / 'CNAME').write_text('homefibercheck.live\n')
