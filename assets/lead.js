@@ -101,7 +101,7 @@
       fetch(endpoint, { method: 'POST', mode: 'no-cors', body: body }).then(function () {
         form.classList.add('sent');
         msg.className = 'form-msg ok';
-        msg.textContent = 'Thanks! An agent will call you shortly (Mon–Fri, 10:30am–7:30pm ET). Need help now? Call ' + (HFC.display || '(888) 725-3056') + '.';
+        msg.textContent = 'Thanks! An agent will call you shortly (Mon–Fri, 9:15am–6:30pm ET). Need help now? Call ' + (HFC.display || '(888) 725-3056') + '.';
         if (window.gtag) {
           if (HFC.formSendTo) gtag('event', 'conversion', { send_to: HFC.formSendTo });
           gtag('event', 'generate_lead', { provider: HFC.provider });
@@ -116,7 +116,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     [].forEach.call(document.querySelectorAll('form.lead'), wire);
-    // Hours badge: "Agents available now" during Mon-Fri 10:30am-7:30pm Eastern.
+    // Hours badge: "Agents available now" during Mon-Fri 9:15am-6:30pm Eastern.
     var el = document.getElementById('open-status');
     if (el && window.Intl) {
       try {
@@ -124,9 +124,9 @@
         new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'short', hour: 'numeric', minute: 'numeric', hour12: false })
           .formatToParts(new Date()).forEach(function (p) { o[p.type] = p.value; });
         var mins = (parseInt(o.hour, 10) % 24) * 60 + parseInt(o.minute, 10);
-        var open = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].indexOf(o.weekday) !== -1 && mins >= 630 && mins < 1170;
+        var open = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].indexOf(o.weekday) !== -1 && mins >= 555 && mins < 1110;
         el.className = 'status' + (open ? ' on' : '');
-        el.textContent = open ? 'Agents available now' : 'Agents available Mon–Fri, 10:30am–7:30pm ET';
+        el.textContent = open ? 'Agents available now' : 'Agents available Mon–Fri, 9:15am–6:30pm ET';
       } catch (e) {}
     }
   });
