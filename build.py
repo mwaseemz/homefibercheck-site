@@ -373,7 +373,7 @@ def brand_page(key, sub=None):
 <section class="hero" id="top">
   <div class="container">
     <div>
-      <span class="status" id="open-status">Mon&ndash;Fri, 10:30am&ndash;7:30pm ET</span>
+      <span class="status" id="open-status">Mon&ndash;Fri, 9:15am&ndash;6:30pm ET</span>
       <h1>{h1}</h1>
       <p class="lead">{lead}</p>
       <div class="cta-row">
@@ -401,7 +401,7 @@ def brand_page(key, sub=None):
 {sections}<section class="band">
   <div class="container">
     <h2>See if {b['name']} Fiber reaches your street</h2>
-    <p>Free address check. No obligation. Mon&ndash;Fri, 10:30am&ndash;7:30pm ET.</p>
+    <p>Free address check. No obligation. Mon&ndash;Fri, 9:15am&ndash;6:30pm ET.</p>
     <a class="btn btn-acc btn-lg" href="tel:{TEL}">{PHONE_SVG}Call {DISPLAY}</a>
   </div>
 </section>
@@ -412,7 +412,7 @@ def brand_page(key, sub=None):
       <h2 id="about">About Us</h2>
       <p>Home Fiber Check is operated by E Market Hub LLC, an independent sales company and a {b['name']} {b['role']}. We help households check fiber availability and place new orders by phone. We are not an internet service provider. All service is provided, installed, billed and supported by the provider under its own terms.</p>
       <h3>Contact Us</h3>
-      <p>Phone: {DISPLAY}<br>Hours: Monday&ndash;Friday, 10:30am&ndash;7:30pm (ET)</p>
+      <p>Phone: {DISPLAY}<br>Hours: Monday&ndash;Friday, 9:15am&ndash;6:30pm (ET)</p>
     </div>
     <div class="box" id="privacy">
       <h2>Privacy Policy</h2>
@@ -468,7 +468,7 @@ def brand_page(key, sub=None):
       </div>
       <div>
         <h4>New {b['name']} Orders</h4>
-        <ul><li><a href="tel:{TEL}">{DISPLAY}</a></li><li>Mon&ndash;Fri, 10:30am&ndash;7:30pm (ET)</li></ul>
+        <ul><li><a href="tel:{TEL}">{DISPLAY}</a></li><li>Mon&ndash;Fri, 9:15am&ndash;6:30pm (ET)</li></ul>
       </div>
     </div>
     <div class="disclaimer">
@@ -512,7 +512,7 @@ SUBPAGES = {
     'call-back': dict(
         title='Request a Call Back About {name} Fiber | {name} {Role}',
         h1='Prefer a call back? <em>We\'ll call you about {name} Fiber.</em>',
-        lead='Leave your name, number and service address in the form, and an agent will call you Mon&ndash;Fri, 10:30am&ndash;7:30pm ET.',
+        lead='Leave your name, number and service address in the form, and an agent will call you Mon&ndash;Fri, 9:15am&ndash;6:30pm ET.',
         desc='Request a call back about new {name} Fiber service.',
         sections=['perks', 'how']),
 }
@@ -556,7 +556,7 @@ def home_page():
 <section class="hero">
   <div class="container" style="grid-template-columns:1fr">
     <div>
-      <span class="status" id="open-status">Mon&ndash;Fri, 10:30am&ndash;7:30pm ET</span>
+      <span class="status" id="open-status">Mon&ndash;Fri, 9:15am&ndash;6:30pm ET</span>
       <h1>Check fiber internet at your address. <em>One call.</em></h1>
       <p class="lead">We're an independent authorized agent for select fiber providers. Call us with your address and we'll check fiber, explain the plans and price, and place your order.</p>
       <div class="cta-row"><a class="btn btn-acc btn-lg" href="tel:{TEL}">{PHONE_SVG}Call {DISPLAY}</a></div>
