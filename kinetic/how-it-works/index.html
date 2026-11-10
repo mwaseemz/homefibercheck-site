@@ -133,7 +133,35 @@
   .plan .speed{font-size:2.4rem;font-weight:900;letter-spacing:-.03em;line-height:1.1;margin:4px 0}
   .plan .speed small{font-size:1.05rem;font-weight:700}
   .plan p{color:var(--muted);font-size:.92rem;margin-bottom:18px;flex:1}
-  .plan .btn{width:100%;padding:13px 10px;font-size:.95rem}
+  .plan .btn{width:100%;padding:13px 10px;font-size:.95rem;margin-top:auto}
+  /* Priced plans (brands with `priced_plans`): four cards, two per row on phones so all prices fit one screen */
+  .grid3.priced{grid-template-columns:repeat(4,1fr)}
+  .plan .price{font-size:1.5rem;font-weight:900;letter-spacing:-.02em;line-height:1.2;margin:2px 0 10px;white-space:nowrap}
+  .plan .price small{font-size:.82rem;font-weight:700;color:var(--muted);letter-spacing:0}
+  .plan .tag{align-self:flex-start;background:var(--acc-soft);color:var(--acc-ink);font-size:.72rem;font-weight:800;padding:4px 10px;border-radius:999px;margin-bottom:10px}
+  @media(max-width:1000px){.grid3.priced{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){
+    .grid3.priced{gap:18px 10px}
+    .priced .plan{padding:22px 12px 12px}
+    .priced .plan .badge{left:12px;font-size:.64rem;padding:4px 9px}
+    .priced .plan .name{font-size:.74rem}
+    .priced .plan .speed{font-size:1.9rem}
+    .priced .plan .price{font-size:1.2rem}
+    .priced .plan p{display:none}
+    .priced .plan .btn{padding:12px 6px;font-size:.92rem;gap:6px}
+    .priced .plan .btn svg{width:16px;height:16px}
+  }
+  .plan .tag{border-radius:10px}
+  /* Starting prices in the hero, so people who searched for prices see them next to the call button */
+  .hero-prices{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:520px;margin:-4px 0 6px}
+  .hero-prices li{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:8px 4px;text-align:center}
+  .hero-prices span{display:block;font-size:.76rem;font-weight:700;color:rgba(255,255,255,.82);white-space:nowrap}
+  .hero-prices strong{display:block;font-size:1.15rem;font-weight:900;color:var(--acc);letter-spacing:-.01em}
+  .hero .from{font-size:.82rem;font-weight:600;color:rgba(255,255,255,.75);margin:0 0 20px}
+  .hero .fine{font-size:.78rem;color:rgba(255,255,255,.72);margin-top:16px;max-width:520px}
+  .hero .fine a{color:#fff;text-decoration:underline}
+  @media(max-width:900px){.hero-prices{margin-top:-6px}.hero .from{margin-bottom:16px}}
+  @media(max-width:360px){.hero-prices strong{font-size:1rem}.hero-prices span{font-size:.7rem}}
   .callout{background:#fff;border:1px solid var(--line);border-left:6px solid var(--acc);border-radius:14px;padding:16px 22px;margin:30px auto 0;max-width:820px;text-align:center;font-weight:600}
   .step-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
   @media(max-width:900px){.step-grid{grid-template-columns:repeat(2,1fr)}}
@@ -180,7 +208,7 @@
     <a class="brand" href="/kinetic/#top" aria-label="Kinetic Authorized Agent"><img src="/assets/kinetic-authorized-agent.png" width="886" height="284" alt="Kinetic Authorized Agent"></a>
     <ul>
       <li><a href="/kinetic/#why">Why Fiber</a></li>
-      <li><a href="/kinetic/plans/">Speeds</a></li>
+      <li><a href="/kinetic/plans/">Plans &amp; Prices</a></li>
       <li><a href="/kinetic/how-it-works/">How It Works</a></li>
       <li><a href="/kinetic/faq/">FAQ</a></li>
     </ul>
@@ -193,6 +221,8 @@
     <div>
       <span class="status" id="open-status">Mon&ndash;Fri, 9:15am&ndash;6:30pm ET</span>
       <h1>How ordering Kinetic Fiber works. <em>About 10 minutes by phone.</em></h1>
+      <ul class="hero-prices" aria-label="Kinetic Fiber starting prices per month"><li><span>100 Mbps</span><strong>$19.99</strong></li><li><span>300 Mbps</span><strong>$34.99</strong></li><li><span>1 Gig</span><strong>$39.99</strong></li><li><span>2 Gig</span><strong>$59.99</strong></li></ul>
+      <p class="from">Starting prices per month*</p>
       <p class="lead">Call with your service address. We check Kinetic Fiber at your home, explain the plans and price, and place your order on the same call.</p>
       <div class="cta-row">
         <a class="btn btn-acc btn-lg" href="tel:+18887253056"><svg class="ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>Call (888) 725-3056</a>
@@ -203,6 +233,7 @@
         <li>No obligation</li>
         <li>Order placed on the call</li>
       </ul>
+      <p class="fine">*Kinetic's advertised starting prices in select markets, with AutoPay. <a href="#plans">See plans and prices</a>.</p>
     </div>
     <div class="hero-card">
       <span class="new-only">New customers only</span>

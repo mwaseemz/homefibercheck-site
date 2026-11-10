@@ -44,6 +44,25 @@ BRANDS = {
         plans_note='Speeds are maximum wired speeds; actual speeds vary. Higher speeds are available in select areas. Plans, pricing, offers and equipment are set by Kinetic and vary by address.',
         callout='Know Kinetic as <strong>Windstream</strong>? Kinetic is Windstream\'s home internet brand &mdash; call and we\'ll check fiber at your address.',
         faq_extra=('Is Kinetic the same as Windstream?', 'Yes. Kinetic is the home internet brand of Windstream. We can check whether Kinetic Fiber has reached your address yet.'),
+        # Kinetic's own advertised starting prices, read 2026-11-10 from gokinetic.com, gokinetic.com/kinetic-fiber-is-here
+        # and deals.gokinetic.com (all three agree; gokinetic.com/internet lists $5-10 more per plan, so prices differ by
+        # market). When `priced_plans` is set the page shows prices, puts the plans first and swaps the price FAQs.
+        # Before changing anything here, re-read Kinetic's pages and update `price_asof`.
+        # Tuples: name, speed, unit, starting price, who it suits, most popular?, tag.
+        price_from='19.99', price_asof='November 10, 2026',
+        priced_plans=[('Fiber 100', '100', 'Mbps', '19.99', 'Browsing, email and streaming for one or two people', False, ''),
+                      ('Fiber 300', '300', 'Mbps', '34.99', 'Streaming and video calls for most households', False, ''),
+                      ('Fiber 1 Gig', '1', 'Gig', '39.99', 'Busy homes with dozens of devices', True, ''),
+                      ('Fiber 2 Gig', '2', 'Gig', '59.99', 'Large smart homes and heavy uploads', False, '2-year price guarantee')],
+        price_note=('*Starting prices advertised by Kinetic on gokinetic.com as of {asof}, in select markets, including a $5/mo AutoPay '
+                    'credit. Taxes, fees and surcharges are extra. Prices, speeds and availability depend on your address and can change: '
+                    'some addresses are priced higher, and not every plan is offered at every address. Speeds are maximum wired speeds; '
+                    'actual speeds vary. We confirm your plan and exact monthly price on the call before you place an order.'),
+        price_faq=('Kinetic advertises fiber plans starting at $19.99/mo for 100 Mbps, $34.99/mo for 300 Mbps, $39.99/mo for 1 Gig and '
+                   '$59.99/mo for 2 Gig in select markets, with AutoPay. Taxes, fees and surcharges are extra, and some addresses are '
+                   'priced higher. We give you the exact monthly price for your address on the call, before you order.'),
+        price_term_faq=('It depends on the plan. Kinetic advertises a 2-year price guarantee on its 2 Gig plan. For any plan, we tell you '
+                        'on the call how long the price is guaranteed at your address before you order. There is no annual contract.'),
         path='kinetic',
     ),
     'earthlink': dict(
@@ -196,7 +215,35 @@ BASE_CSS = '''
   .plan .speed{font-size:2.4rem;font-weight:900;letter-spacing:-.03em;line-height:1.1;margin:4px 0}
   .plan .speed small{font-size:1.05rem;font-weight:700}
   .plan p{color:var(--muted);font-size:.92rem;margin-bottom:18px;flex:1}
-  .plan .btn{width:100%;padding:13px 10px;font-size:.95rem}
+  .plan .btn{width:100%;padding:13px 10px;font-size:.95rem;margin-top:auto}
+  /* Priced plans (brands with `priced_plans`): four cards, two per row on phones so all prices fit one screen */
+  .grid3.priced{grid-template-columns:repeat(4,1fr)}
+  .plan .price{font-size:1.5rem;font-weight:900;letter-spacing:-.02em;line-height:1.2;margin:2px 0 10px;white-space:nowrap}
+  .plan .price small{font-size:.82rem;font-weight:700;color:var(--muted);letter-spacing:0}
+  .plan .tag{align-self:flex-start;background:var(--acc-soft);color:var(--acc-ink);font-size:.72rem;font-weight:800;padding:4px 10px;border-radius:999px;margin-bottom:10px}
+  @media(max-width:1000px){.grid3.priced{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){
+    .grid3.priced{gap:18px 10px}
+    .priced .plan{padding:22px 12px 12px}
+    .priced .plan .badge{left:12px;font-size:.64rem;padding:4px 9px}
+    .priced .plan .name{font-size:.74rem}
+    .priced .plan .speed{font-size:1.9rem}
+    .priced .plan .price{font-size:1.2rem}
+    .priced .plan p{display:none}
+    .priced .plan .btn{padding:12px 6px;font-size:.92rem;gap:6px}
+    .priced .plan .btn svg{width:16px;height:16px}
+  }
+  .plan .tag{border-radius:10px}
+  /* Starting prices in the hero, so people who searched for prices see them next to the call button */
+  .hero-prices{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:520px;margin:-4px 0 6px}
+  .hero-prices li{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:8px 4px;text-align:center}
+  .hero-prices span{display:block;font-size:.76rem;font-weight:700;color:rgba(255,255,255,.82);white-space:nowrap}
+  .hero-prices strong{display:block;font-size:1.15rem;font-weight:900;color:var(--acc);letter-spacing:-.01em}
+  .hero .from{font-size:.82rem;font-weight:600;color:rgba(255,255,255,.75);margin:0 0 20px}
+  .hero .fine{font-size:.78rem;color:rgba(255,255,255,.72);margin-top:16px;max-width:520px}
+  .hero .fine a{color:#fff;text-decoration:underline}
+  @media(max-width:900px){.hero-prices{margin-top:-6px}.hero .from{margin-bottom:16px}}
+  @media(max-width:360px){.hero-prices strong{font-size:1rem}.hero-prices span{font-size:.7rem}}
   .callout{background:#fff;border:1px solid var(--line);border-left:6px solid var(--acc);border-radius:14px;padding:16px 22px;margin:30px auto 0;max-width:820px;text-align:center;font-weight:600}
   .step-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
   @media(max-width:900px){.step-grid{grid-template-columns:repeat(2,1fr)}}
@@ -256,10 +303,45 @@ def brand_page(key, sub=None):
     css_vars = (f":root{{--hero:{b['hero']};--acc:{b['acc']};--acc-dark:{b['acc_dark']};--acc-soft:{b['acc_soft']};--acc-ink:{b['acc_ink']};"
                 f"--glow:{b['glow']};--glow2:{b['glow2']};--ink:#111318;--ink2:#2A2D35;--muted:#5F6368;--line:#E7E8EC;--soft:#F6F6F4}}")
     why = ''.join(f'<div class="card"><div class="dot"></div><h3>{t}</h3><p>{d}</p></div>' for t, d in b['why'])
-    plans = ''.join(
-        f'<div class="plan{" pop" if pop else ""}">{"<span class=badge>Most popular</span>" if pop else ""}<div class="name">{n}</div>'
-        f'<div class="speed">{s} <small>{u}</small></div><p>{d}</p><a class="btn btn-acc" href="tel:{TEL}">Call for your price</a></div>'
-        for n, s, u, d, pop in b['plans'])
+    priced = b.get('priced_plans')
+    if priced:
+        plans = ''.join(
+            f'<div class="plan{" pop" if pop else ""}">{"<span class=badge>Most popular</span>" if pop else ""}<div class="name">{n}</div>'
+            f'<div class="speed">{s} <small>{u}</small></div><div class="price"><small>from</small> ${p}<small>/mo*</small></div>'
+            f'{f"<span class=tag>{tag}</span>" if tag else ""}<p>{d}</p>'
+            f'<a class="btn btn-acc" href="tel:{TEL}" aria-label="Call {DISPLAY} about {n}">{PHONE_SVG}Call now</a></div>'
+            for n, s, u, p, d, pop, tag in priced)
+        plans_head = (f'<div class="center"><span class="eyebrow">Plans and prices</span></div>\n'
+                      f'    <h2 class="center">{b["name"]} Fiber plans and prices</h2>\n'
+                      f'    <p class="sub center">These are {b["name"]}\'s advertised starting prices. Your exact price depends on your '
+                      f'address, so we confirm it on the call before you order.</p>')
+        plans_grid, plans_note = 'grid3 priced', b['price_note'].format(asof=b['price_asof'])
+        strip = ''.join(f'<li><span>{s} {u}</span><strong>${p}</strong></li>' for n, s, u, p, d, pop, tag in priced)
+        hero_price = (f'\n      <ul class="hero-prices" aria-label="{b["name"]} Fiber starting prices per month">{strip}</ul>'
+                      f'\n      <p class="from">Starting prices per month*</p>',
+                      f'\n      <p class="fine">*{b["name"]}\'s advertised starting prices in select markets, with AutoPay. '
+                      f'<a href="#plans">See plans and prices</a>.</p>')
+        price_faqs = (f'<details><summary>How much does {b["name"]} Fiber cost?</summary><p>{b["price_faq"]}</p></details>\n'
+                      f'    <details><summary>Will my price go up after 12 months?</summary><p>{b["price_term_faq"]}</p></details>\n'
+                      f'    <details><summary>Is {b["name"]} Fiber available in my area?</summary><p>{b["name"]} is building fiber street '
+                      f'by street, so availability goes by address, not by town. Call with your address and we\'ll check it in a couple '
+                      f'of minutes.</p></details>')
+        nav_plans = 'Plans &amp; Prices'
+    else:
+        plans = ''.join(
+            f'<div class="plan{" pop" if pop else ""}">{"<span class=badge>Most popular</span>" if pop else ""}<div class="name">{n}</div>'
+            f'<div class="speed">{s} <small>{u}</small></div><p>{d}</p><a class="btn btn-acc" href="tel:{TEL}">Call for your price</a></div>'
+            for n, s, u, d, pop in b['plans'])
+        plans_head = (f'<div class="center"><span class="eyebrow">Speeds</span></div>\n'
+                      f'    <h2 class="center">Pick the speed that fits your home</h2>\n'
+                      f'    <p class="sub center">Pricing is set by {b["name"]} and depends on your address, so we quote your exact monthly '
+                      f'price &mdash; and any current offer &mdash; on the call.</p>')
+        plans_grid, plans_note = 'grid3', b['plans_note']
+        hero_price = ('', '')
+        price_faqs = (f'<details><summary>Why don\'t you list prices?</summary><p>{b["name"]}\'s pricing and offers depend on your address '
+                      f'and change over time. We\'d rather give you the real monthly price for your home on the call than publish a number '
+                      f'that turns out to be wrong.</p></details>')
+        nav_plans = 'Speeds'
     perks = ''.join(f'<li>{p}</li>' for p in b['perks'])
     sup = f'<a href="tel:{b["support_tel"]}" data-no-track>{b["support"]}</a>'
     form_send = f'{AW}/{FORM_LABEL}' if FORM_LABEL else ''
@@ -280,12 +362,10 @@ def brand_page(key, sub=None):
 ''',
         'plans': f'''<section class="plans" id="plans">
   <div class="container">
-    <div class="center"><span class="eyebrow">Speeds</span></div>
-    <h2 class="center">Pick the speed that fits your home</h2>
-    <p class="sub center">Pricing is set by {b['name']} and depends on your address, so we quote your exact monthly price &mdash; and any current offer &mdash; on the call.</p>
-    <div class="grid3">{plans}</div>
+    {plans_head}
+    <div class="{plans_grid}">{plans}</div>
     <div class="callout">{b['callout']}</div>
-    <p class="note">{b['plans_note']}</p>
+    <p class="note">{plans_note}</p>
   </div>
 </section>
 
@@ -311,7 +391,7 @@ def brand_page(key, sub=None):
     <h2 class="center" style="margin-bottom:26px">Frequently asked questions</h2>
     <details open><summary>Is this {b['name']}'s website?</summary><p>No. We are an independent {b['name']} {b['role']}. We are not {b['name']} and we are not an internet service provider. We can check availability and place new {b['name']} orders; the service itself is provided, installed, billed and supported by {b['name']}.</p></details>
     <details><summary>Does it cost more to order through you?</summary><p>No. You get the same {b['name']} plans available at your address. We're paid by the provider when we set up a new customer, which doesn't change what you pay.</p></details>
-    <details><summary>Why don't you list prices?</summary><p>{b['name']}'s pricing and offers depend on your address and change over time. We'd rather give you the real monthly price for your home on the call than publish a number that turns out to be wrong.</p></details>
+    {price_faqs}
     <details><summary>{b['faq_extra'][0]}</summary><p>{b['faq_extra'][1]}</p></details>
     <details><summary>What if {b['name']} Fiber isn't available at my address?</summary><p>We'll tell you plainly. If fiber hasn't reached your street yet, we'll let you know rather than push you into a plan that doesn't fit.</p></details>
     <details><summary>I'm already a {b['name']} customer and need help with my bill or service.</summary><p>We can't help with existing accounts &mdash; we only set up new service. Please contact {b['name']} directly at {sup} or through {b['site']} for billing, technical support, moves or cancellations.</p></details>
@@ -328,6 +408,11 @@ def brand_page(key, sub=None):
         desc = (f"{b['name']} {b['role']}. Call {DISPLAY} and we'll check whether {b['name']} Fiber reaches your address, "
                 f"explain the plans and price, and place your order.")
         order = ['perks', 'why', 'plans', 'how', 'faq']
+        if priced:  # people who search plans and prices see them right under the call button
+            title = f"{b['name']} Fiber Internet Plans &amp; Prices — Check Your Address | {b['name']} {b['Role']}"
+            desc = (f"{b['name']} {b['role']}. See {b['name']} Fiber plans and starting prices, then call {DISPLAY} to check "
+                    f"your address and place your order.")
+            order = ['perks', 'plans', 'why', 'how', 'faq']
     else:
         sp = SUBPAGES[sub]
         title = sp['title'].format(**b)
@@ -362,7 +447,7 @@ def brand_page(key, sub=None):
     <a class="brand" href="{home}#top" aria-label="{b['name']} {b['Role']}"><img src="/assets/{b['logo']}" width="{b['lw']}" height="{b['lh']}" alt="{b['name']} {b['Role']}"></a>
     <ul>
       <li><a href="{home}#why">Why Fiber</a></li>
-      <li><a href="{base}plans/">Speeds</a></li>
+      <li><a href="{base}plans/">{nav_plans}</a></li>
       <li><a href="{base}how-it-works/">How It Works</a></li>
       <li><a href="{base}faq/">FAQ</a></li>
     </ul>
@@ -374,7 +459,7 @@ def brand_page(key, sub=None):
   <div class="container">
     <div>
       <span class="status" id="open-status">Mon&ndash;Fri, 9:15am&ndash;6:30pm ET</span>
-      <h1>{h1}</h1>
+      <h1>{h1}</h1>{hero_price[0]}
       <p class="lead">{lead}</p>
       <div class="cta-row">
         <a class="btn btn-acc btn-lg" href="tel:{TEL}">{PHONE_SVG}Call {DISPLAY}</a>
@@ -384,7 +469,7 @@ def brand_page(key, sub=None):
         <li>Free address check</li>
         <li>No obligation</li>
         <li>Order placed on the call</li>
-      </ul>
+      </ul>{hero_price[1]}
     </div>
     <div class="hero-card">
       <span class="new-only">New customers only</span>
