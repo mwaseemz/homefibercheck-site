@@ -87,8 +87,9 @@
       detail: secs() + 's (' + vis + 's visible), scrolled ' + deepest + '%, ' + (taps ? 'tapped call' : 'no tap')
     });
   }
+  // Only log when the page goes from visible to hidden (navigating away fires pagehide and visibilitychange both).
   document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'hidden') hidden();
+    if (document.visibilityState === 'hidden') { if (shownAt) hidden(); }
     else shownAt = Date.now();
   });
   addEventListener('pagehide', function () { if (shownAt) hidden(); });
