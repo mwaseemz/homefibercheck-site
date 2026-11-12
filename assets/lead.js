@@ -48,6 +48,24 @@
     log('tap', { dialed: dialed, swapped: dialed === digits(HFC.display || '(888) 725-3056').slice(-10) ? 'no' : 'yes' });
   }, true);
 
+  // When an ad visitor leaves the page (switches app, closes the tab or taps call), log how long they stayed, how far
+  // they scrolled and whether they tapped call. Tells quick bounces (wrong clicks) apart from people who read and left.
+  (function () {
+    var ad = /[?&](gclid|gbraid|wbraid)=/.test(location.search);
+    try { ad = ad || !!sessionStorage.getItem('hfc_visit'); } catch (e) {}
+    if (!ad) return;
+    var t0 = Date.now(), deepest = 0, tapped = false, done = false;
+    function depth() { var h = document.documentElement, room = h.scrollHeight - innerHeight; return room > 0 ? Math.min(100, Math.round(100 * scrollY / room)) : 100; }
+    addEventListener('scroll', function () { var d = depth(); if (d > deepest) deepest = d; }, { passive: true });
+    document.addEventListener('click', function (e) { if (e.target && e.target.closest && e.target.closest('a[href^="tel:"]:not([data-no-track])')) tapped = true; }, true);
+    function leave() {
+      if (done) return; done = true;
+      log('leave', { detail: Math.round((Date.now() - t0) / 1000) + 's, scrolled ' + deepest + '%, ' + (tapped ? 'tapped call' : 'no tap') });
+    }
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') leave(); });
+    addEventListener('pagehide', leave);
+  })();
+
   function wire(form) {
     var msg = form.querySelector('.form-msg');
     var btn = form.querySelector('button[type=submit]');
