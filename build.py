@@ -309,7 +309,7 @@ def brand_page(key, sub=None):
             f'<div class="plan{" pop" if pop else ""}">{"<span class=badge>Most popular</span>" if pop else ""}<div class="name">{n}</div>'
             f'<div class="speed">{s} <small>{u}</small></div><div class="price"><small>from</small> ${p}<small>/mo*</small></div>'
             f'{f"<span class=tag>{tag}</span>" if tag else ""}<p>{d}</p>'
-            f'<a class="btn btn-acc" href="tel:{TEL}" aria-label="Call {DISPLAY} about {n}">{PHONE_SVG}Call now</a></div>'
+            f'<a class="btn btn-acc" href="tel:{TEL}" data-track="plan: {n}" aria-label="Call {DISPLAY} about {n}">{PHONE_SVG}Call now</a></div>'
             for n, s, u, p, d, pop, tag in priced)
         plans_head = (f'<div class="center"><span class="eyebrow">Plans and prices</span></div>\n'
                       f'    <h2 class="center">{b["name"]} Fiber plans and prices</h2>\n'
@@ -330,7 +330,7 @@ def brand_page(key, sub=None):
     else:
         plans = ''.join(
             f'<div class="plan{" pop" if pop else ""}">{"<span class=badge>Most popular</span>" if pop else ""}<div class="name">{n}</div>'
-            f'<div class="speed">{s} <small>{u}</small></div><p>{d}</p><a class="btn btn-acc" href="tel:{TEL}">Call for your price</a></div>'
+            f'<div class="speed">{s} <small>{u}</small></div><p>{d}</p><a class="btn btn-acc" href="tel:{TEL}" data-track="plan: {n}">Call for your price</a></div>'
             for n, s, u, d, pop in b['plans'])
         plans_head = (f'<div class="center"><span class="eyebrow">Speeds</span></div>\n'
                       f'    <h2 class="center">Pick the speed that fits your home</h2>\n'
@@ -451,7 +451,7 @@ def brand_page(key, sub=None):
       <li><a href="{base}how-it-works/">How It Works</a></li>
       <li><a href="{base}faq/">FAQ</a></li>
     </ul>
-    <a class="call" href="tel:{TEL}" aria-label="Call {DISPLAY}">{PHONE_SVG}{DISPLAY}</a>
+    <a class="call" href="tel:{TEL}" data-track="header" aria-label="Call {DISPLAY}">{PHONE_SVG}{DISPLAY}</a>
   </nav>
 </header>
 
@@ -462,7 +462,7 @@ def brand_page(key, sub=None):
       <h1>{h1}</h1>{hero_price[0]}
       <p class="lead">{lead}</p>
       <div class="cta-row">
-        <a class="btn btn-acc btn-lg" href="tel:{TEL}">{PHONE_SVG}Call {DISPLAY}</a>
+        <a class="btn btn-acc btn-lg" href="tel:{TEL}" data-track="hero button">{PHONE_SVG}Call {DISPLAY}</a>
       </div>
       <p class="cta-note">Takes about 10 minutes &middot; new service only</p>
       <ul class="checks">
@@ -475,8 +475,8 @@ def brand_page(key, sub=None):
       <span class="new-only">New customers only</span>
       <h3>Is {b['name']} Fiber at your address?</h3>
       <p>Have your service address ready. Most calls take about 10 minutes.</p>
-      <a class="num" href="tel:{TEL}">{DISPLAY}</a>
-      <a class="btn btn-acc btn-lg" href="tel:{TEL}">{PHONE_SVG}Tap to Call Now</a>
+      <a class="num" href="tel:{TEL}" data-track="card number">{DISPLAY}</a>
+      <a class="btn btn-acc btn-lg" href="tel:{TEL}" data-track="card button">{PHONE_SVG}Tap to Call Now</a>
       {lead_form(b)}
       <p class="existing">Already have {b['name']}? For billing, outages or support, call {b['name']} directly at {sup}.</p>
     </div>
@@ -487,7 +487,7 @@ def brand_page(key, sub=None):
   <div class="container">
     <h2>See if {b['name']} Fiber reaches your street</h2>
     <p>Free address check. No obligation. Mon&ndash;Fri, 9:15am&ndash;6:30pm ET.</p>
-    <a class="btn btn-acc btn-lg" href="tel:{TEL}">{PHONE_SVG}Call {DISPLAY}</a>
+    <a class="btn btn-acc btn-lg" href="tel:{TEL}" data-track="bottom band">{PHONE_SVG}Call {DISPLAY}</a>
   </div>
 </section>
 
@@ -553,7 +553,7 @@ def brand_page(key, sub=None):
       </div>
       <div>
         <h4>New {b['name']} Orders</h4>
-        <ul><li><a href="tel:{TEL}">{DISPLAY}</a></li><li>Mon&ndash;Fri, 9:15am&ndash;6:30pm (ET)</li></ul>
+        <ul><li><a href="tel:{TEL}" data-track="footer">{DISPLAY}</a></li><li>Mon&ndash;Fri, 9:15am&ndash;6:30pm (ET)</li></ul>
       </div>
     </div>
     <div class="disclaimer">
@@ -564,11 +564,12 @@ def brand_page(key, sub=None):
   </div>
 </footer>
 
-<a class="sticky-call" href="tel:{TEL}" aria-label="Call {DISPLAY}">{PHONE_SVG}<span>Call {DISPLAY}<small>Check {b['name']} Fiber at your address</small></span></a>
+<a class="sticky-call" href="tel:{TEL}" data-track="sticky bar" aria-label="Call {DISPLAY}">{PHONE_SVG}<span>Call {DISPLAY}<small>Check {b['name']} Fiber at your address</small></span></a>
 
 <script>window.HFC = {{ provider: '{b['name']}', display: '{DISPLAY}', formSendTo: '{form_send}' }};</script>
 <script src="/assets/lead-config.js"></script>
 <script src="/assets/lead.js"></script>
+<script src="/assets/track.js"></script>
 </body>
 </html>
 '''
@@ -670,6 +671,7 @@ def home_page():
 <script>window.HFC = {{ provider: 'Home', display: '{DISPLAY}' }};</script>
 <script src="/assets/lead-config.js"></script>
 <script src="/assets/lead.js"></script>
+<script src="/assets/track.js"></script>
 </body>
 </html>
 '''

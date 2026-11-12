@@ -24,47 +24,7 @@
 
   function digits(s) { return (s || '').replace(/\D/g, ''); }
 
-  // Our own log (the "Call taps" tab of the leads Sheet) of ad visits and call-button taps. Google only counts a
-  // landing-page call when its tracking number had already replaced ours at the moment of the tap.
-  function log(kind, extra) {
-    var endpoint = window.LEAD_ENDPOINT || '';
-    if (!endpoint || !window.fetch || !window.URLSearchParams) return;
-    try {
-      var body = new URLSearchParams({ kind: kind, provider: HFC.provider || 'Unknown',
-        page: location.origin + location.pathname, gclid: getGclid(), ua: navigator.userAgent.slice(0, 180) });
-      for (var k in (extra || {})) body.append(k, extra[k]);
-      fetch(endpoint, { method: 'POST', mode: 'no-cors', body: body, keepalive: true }).catch(function () {});
-    } catch (e) {}
-  }
-  if (/[?&](gclid|gbraid|wbraid)=/.test(location.search)) {
-    try {
-      if (!sessionStorage.getItem('hfc_visit')) { sessionStorage.setItem('hfc_visit', '1'); log('visit'); }
-    } catch (e) { log('visit'); }
-  }
-  document.addEventListener('click', function (e) {
-    var a = e.target && e.target.closest ? e.target.closest('a[href^="tel:"]:not([data-no-track])') : null;
-    if (!a) return;
-    var dialed = digits(a.getAttribute('href')).slice(-10);
-    log('tap', { dialed: dialed, swapped: dialed === digits(HFC.display || '(888) 725-3056').slice(-10) ? 'no' : 'yes' });
-  }, true);
-
-  // When an ad visitor leaves the page (switches app, closes the tab or taps call), log how long they stayed, how far
-  // they scrolled and whether they tapped call. Tells quick bounces (wrong clicks) apart from people who read and left.
-  (function () {
-    var ad = /[?&](gclid|gbraid|wbraid)=/.test(location.search);
-    try { ad = ad || !!sessionStorage.getItem('hfc_visit'); } catch (e) {}
-    if (!ad) return;
-    var t0 = Date.now(), deepest = 0, tapped = false, done = false;
-    function depth() { var h = document.documentElement, room = h.scrollHeight - innerHeight; return room > 0 ? Math.min(100, Math.round(100 * scrollY / room)) : 100; }
-    addEventListener('scroll', function () { var d = depth(); if (d > deepest) deepest = d; }, { passive: true });
-    document.addEventListener('click', function (e) { if (e.target && e.target.closest && e.target.closest('a[href^="tel:"]:not([data-no-track])')) tapped = true; }, true);
-    function leave() {
-      if (done) return; done = true;
-      log('leave', { detail: Math.round((Date.now() - t0) / 1000) + 's, scrolled ' + deepest + '%, ' + (tapped ? 'tapped call' : 'no tap') });
-    }
-    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') leave(); });
-    addEventListener('pagehide', leave);
-  })();
+  // Ad visits, call taps and exits are logged by assets/track.js (loaded right after this file).
 
   function wire(form) {
     var msg = form.querySelector('.form-msg');

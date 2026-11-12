@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Call result</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:#f4f6f8;color:#14212b;line-height:1.4;padding:16px}
+  main{max-width:560px;margin:0 auto}
+  h1{font-size:1.25rem;margin-bottom:4px}
+  .sub{color:#56636d;font-size:.9rem;margin-bottom:16px}
+  fieldset{border:0;background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  legend{font-weight:700;font-size:.95rem;padding:0;margin-bottom:8px;float:left;width:100%}
+  .opts{display:flex;flex-wrap:wrap;gap:8px;clear:both}
+  .opts label{flex:1 1 auto}
+  .opts input{position:absolute;opacity:0;pointer-events:none}
+  .opts span{display:block;text-align:center;padding:12px 10px;border:2px solid #d5dce2;border-radius:10px;font-weight:600;cursor:pointer;background:#fff;min-width:96px}
+  .opts input:checked+span{border-color:#0b6bcb;background:#e8f1fb;color:#0b4f96}
+  .opts input:focus-visible+span{outline:3px solid #0b6bcb;outline-offset:2px}
+  .opts .sale input:checked+span{border-color:#16803c;background:#e6f6ec;color:#0f5f2c}
+  .row{display:flex;gap:8px;clear:both}
+  .row>*{flex:1}
+  input[type=text],input[type=tel],input[type=password],textarea{width:100%;padding:11px;border:2px solid #d5dce2;border-radius:10px;font:inherit;background:#fff}
+  textarea{min-height:64px;resize:vertical}
+  .hint{color:#56636d;font-size:.8rem;margin-top:4px;clear:both}
+  button{width:100%;padding:15px;border:0;border-radius:12px;background:#0b6bcb;color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer}
+  button:disabled{opacity:.6}
+  #msg{margin-top:12px;font-weight:600;min-height:1.4em}
+  #msg.ok{color:#16803c}#msg.err{color:#b42318}
+  .who{display:flex;gap:8px;clear:both}
+  #order-box{display:none;margin-top:10px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Log a call result</h1>
+  <p class="sub">One entry per ad call. Takes 10 seconds. It tells us which ads bring buyers and which bring the wrong calls.</p>
+  <form id="f" autocomplete="off">
+    <fieldset>
+      <legend>Agent</legend>
+      <div class="who">
+        <input type="text" name="agent" placeholder="Your name" required>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>When did the call start?</legend>
+      <div class="opts">
+        <label><input type="radio" name="ago" value="0" checked><span>Just now</span></label>
+        <label><input type="radio" name="ago" value="5"><span>5 min ago</span></label>
+        <label><input type="radio" name="ago" value="15"><span>15 min</span></label>
+        <label><input type="radio" name="ago" value="30"><span>30 min</span></label>
+        <label><input type="radio" name="ago" value="60"><span>1 hour</span></label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Which provider was the caller after?</legend>
+      <div class="opts">
+        <label><input type="radio" name="provider" value="Frontier" required><span>Frontier</span></label>
+        <label><input type="radio" name="provider" value="EarthLink"><span>EarthLink</span></label>
+        <label><input type="radio" name="provider" value="Kinetic"><span>Kinetic</span></label>
+        <label><input type="radio" name="provider" value="Verizon"><span>Verizon</span></label>
+        <label><input type="radio" name="provider" value="Brightspeed"><span>Brightspeed</span></label>
+        <label><input type="radio" name="provider" value="Other"><span>Other</span></label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Result</legend>
+      <div class="opts">
+        <label class="sale"><input type="radio" name="result" value="SALE" required><span>Sale</span></label>
+        <label><input type="radio" name="result" value="CALLBACK"><span>Callback / thinking</span></label>
+        <label><input type="radio" name="result" value="NOT AVAILABLE"><span>Not available at address</span></label>
+        <label><input type="radio" name="result" value="PRICE"><span>Price / fees refused</span></label>
+        <label><input type="radio" name="result" value="EXISTING CUSTOMER"><span>Existing customer (bill, support, cancel)</span></label>
+        <label><input type="radio" name="result" value="NOT HOME INTERNET"><span>Wanted something else</span></label>
+        <label><input type="radio" name="result" value="HUNG UP"><span>Hung up / silent</span></label>
+        <label><input type="radio" name="result" value="OTHER"><span>Other</span></label>
+      </div>
+      <div id="order-box"><input type="text" name="order" placeholder="Order / confirmation # (if you have it)"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Caller details (optional)</legend>
+      <div class="row">
+        <input type="tel" name="phone" placeholder="Caller phone" inputmode="tel">
+        <input type="text" name="zip" placeholder="State or ZIP">
+      </div>
+      <textarea name="notes" placeholder="Anything useful: what they searched, what they wanted, why no sale" style="margin-top:8px"></textarea>
+    </fieldset>
+
+    <button type="submit">Save result</button>
+    <p id="msg" role="status"></p>
+  </form>
+</main>
+<script>
+(function () {
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbzitChhtPrnp4EhSJkoOEisLz3gxV9ittmvaFe0qMCtMxXygvwjadlZU2kOcQav22kq/exec';
+  var f = document.getElementById('f'), msg = document.getElementById('msg'), btn = f.querySelector('button');
+  function load(k) { try { return localStorage.getItem('agent_' + k) || ''; } catch (e) { return ''; } }
+  function save(k, v) { try { localStorage.setItem('agent_' + k, v); } catch (e) {} }
+  f.agent.value = load('name');
+  f.addEventListener('change', function () {
+    document.getElementById('order-box').style.display = f.result.value === 'SALE' ? 'block' : 'none';
+  });
+  f.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!f.provider.value || !f.result.value) { msg.className = 'err'; msg.textContent = 'Pick the provider and the result.'; return; }
+    save('name', f.agent.value.trim());
+    var body = new URLSearchParams({
+      kind: 'result', agent: f.agent.value.trim(), ago: f.ago.value,
+      provider: f.provider.value, result: f.result.value, order: f.order.value.trim(),
+      phone: f.phone.value.replace(/\D/g, '').slice(-10), zip: f.zip.value.trim(), notes: f.notes.value.trim()
+    });
+    btn.disabled = true; msg.className = ''; msg.textContent = 'Saving…';
+    fetch(ENDPOINT, { method: 'POST', body: body }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.ok) throw new Error(j.error || 'not saved');
+      msg.className = 'ok'; msg.textContent = 'Saved: ' + f.provider.value + ', ' + f.result.value.toLowerCase() + '. Thanks!';
+      ['order', 'phone', 'zip', 'notes'].forEach(function (n) { f[n].value = ''; });
+      [].forEach.call(f.querySelectorAll('input[name=result],input[name=provider]'), function (i) { i.checked = false; });
+      f.querySelector('input[name=ago][value="0"]').checked = true;
+      document.getElementById('order-box').style.display = 'none';
+    }).catch(function (err) {
+      msg.className = 'err';
+      msg.textContent = /pin/i.test(String(err.message)) ? 'Wrong PIN.' : 'Not saved. Check the internet and try again.';
+    }).then(function () { btn.disabled = false; });
+  });
+})();
+</script>
+</body>
+</html>
