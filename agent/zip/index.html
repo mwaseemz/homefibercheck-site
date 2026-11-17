@@ -138,7 +138,7 @@
         <tr><td>Verizon</td><td class="num">1-800-837-4966</td><td></td></tr>
       </tbody>
     </table>
-    <p class="note">Then make one offer: type their ZIP above and check the fiber options and the <strong>Verizon / EarthLink 5G Home backups</strong> for their address in Chuzo. Brightspeed customers: follow the note in the table.</p>
+    <p class="note">Then make one offer: type their ZIP above and check the fiber options and the <strong>EarthLink 5G Home backup</strong> (plus Verizon Fios where it’s built) for their address in Chuzo. Brightspeed customers: follow the note in the table.</p>
   </details>
 
   <footer id="foot"></footer>
@@ -193,13 +193,10 @@ function otherLines(r){
 }
 
 function alwaysLines(state){
-  var vz = FIOS[state]
-    ? ['Check first: Verizon Fios or 5G Home.', ' Fios fiber is built in parts of ' + (STATES[state] || state) + ', and 5G Home is often available where Fios isn’t. Check the address in Chuzo.']
-    : ['Check first: Verizon 5G Home.', ' No Fios in ' + (STATES[state] || 'this state') + ', but 5G Home is often available. Check the address in Chuzo.'];
-  return [
-    vz,
-    ['Then: EarthLink 5G Home Internet.', ' If Verizon isn’t available at the address. Also wireless; check it in Chuzo.']
-  ];
+  var lines = [];
+  if (FIOS[state]) lines.push(['Verizon Fios.', ' Fios fiber is built in parts of ' + (STATES[state] || state) + '. Check the address in Chuzo.']);
+  lines.push(['EarthLink 5G Home Internet.', ' Wireless, so it doesn’t depend on whose lines are at the address. Check it in Chuzo. (We can’t sell Verizon 5G Home.)']);
+  return lines;
 }
 
 function el(tag, cls, text){
@@ -247,10 +244,10 @@ function render(){
   place.appendChild(el('span', 'count', fiber.length === 0 ? 'No fiber on our lists' : fiber.length === 1 ? '1 fiber option to check' : fiber.length + ' fiber options to check'));
   out.appendChild(place);
 
-  if (asked === 'verizon' && !fiber.length) {
-    out.appendChild(el('div', 'callout', 'We have no ZIP list for Verizon, and no fiber provider on our lists covers ' + zip + '. Check Verizon 5G Home in Chuzo, then EarthLink 5G Home, before you let the caller go.'));
+  if (asked === 'verizon' && !FIOS[r.state]) {
+    out.appendChild(el('div', 'callout', 'Verizon Fios isn’t built in ' + (STATES[r.state] || 'this state') + ', and we can’t sell Verizon 5G Home. Offer the options below before you let the caller go.'));
   } else if (asked === 'verizon') {
-    out.appendChild(el('div', 'callout', 'We have no ZIP list for Verizon. Check the address in Chuzo first. If it doesn’t qualify, offer the options below.'));
+    out.appendChild(el('div', 'callout', 'We have no ZIP list for Verizon Fios. Check the address in Chuzo first. If it doesn’t qualify, offer the options below.'));
   } else if (asked && !askedHere) {
     out.appendChild(el('div', 'callout', ASKED_NAMES[asked] + ' fiber isn’t listed in this ZIP. Don’t end the call: offer the options below.'));
   }
@@ -274,7 +271,7 @@ function render(){
     });
     out.appendChild(ol);
   } else if (asked !== 'verizon') {
-    out.appendChild(el('div', 'callout', 'No fiber provider on our lists covers ' + zip + '. Check the two backups below in Chuzo before you let the caller go.'));
+    out.appendChild(el('div', 'callout', 'No fiber provider on our lists covers ' + zip + '. Check the backup below in Chuzo before you let the caller go.'));
   }
 
   var other = otherLines(r);
@@ -320,7 +317,7 @@ document.addEventListener('keydown', function(e){
 document.getElementById('foot').textContent =
   'Coverage lists: Brightspeed, Frontier, Kinetic and EarthLink ZIP files from PerfectVision. ' +
   (STATS.zips ? STATS.zips.toLocaleString('en-US') + ' ZIPs, ' : '') +
-  (STATS.built ? 'built ' + STATS.built + '. ' : '') + 'Verizon and EarthLink 5G Home have no ZIP list: Chuzo confirms them by address. Internal use only: don’t share with callers.';
+  (STATS.built ? 'built ' + STATS.built + '. ' : '') + 'Verizon Fios and EarthLink 5G Home have no ZIP list: Chuzo confirms them by address. We can’t sell Verizon 5G Home. Internal use only: don’t share with callers.';
 render();
 </script>
 </body>
