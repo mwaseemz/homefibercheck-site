@@ -677,6 +677,156 @@ def home_page():
 '''
 
 
+def switch_page():
+    """Cable-to-fiber switch page for the 'Switch to Fiber' campaign (cable/competitor and local-shopper searches).
+    No competitor trademarks: the page talks about 'cable' and lists only the providers we sell."""
+    css_vars = (":root{--hero:#0F2A3D;--acc:#2DC3A4;--acc-dark:#24A98E;--acc-soft:#E2F7F2;--acc-ink:#0D7A66;--glow:45,195,164;--glow2:255,255,255;"
+                "--ink:#111318;--ink2:#2A2D35;--muted:#5F6368;--line:#E7E8EC;--soft:#F6F6F4}")
+    why = ''.join(f'<div class="card"><h4>{t}</h4><p>{d}</p></div>' for t, d in [
+        ('Faster uploads than cable', 'Fiber uploads far faster than cable &mdash; video calls, cloud backups, gaming and big files stop stalling.'),
+        ('Unlimited data', 'The fiber plans we sell come without data caps, so you can stream and work from home without watching a meter.'),
+        ('Price guarantees on select plans', 'Some fiber providers lock your price for years on select plans. We tell you the exact term for your address.'),
+        ('One call, every option', 'We check each fiber provider we sell at your address and walk you through the best fit, then place the order.')])
+    provs = ''.join(f'<div class="prov"><h4 style="margin:0">{n}</h4><p style="margin:0">{d}</p></div>' for n, d in [
+        ('Frontier Fiber', 'Fiber plans from 500 Mbps to multi-gig in Frontier fiber areas.'),
+        ('Kinetic Fiber', 'Fiber from Kinetic (Windstream) in its fiber areas.'),
+        ('Brightspeed Fiber', 'Fiber where Brightspeed has upgraded its network.'),
+        ('EarthLink Fiber &amp; 5G Home', 'EarthLink Fiber in select areas, and EarthLink 5G Home Internet where fiber hasn\'t arrived.')])
+    return f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0F2A3D">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>Switch From Cable to Fiber Internet — Check Your Address | Home Fiber Check</title>
+<meta name="description" content="Paying too much for cable internet? Call {DISPLAY} and we'll check every fiber provider we sell at your address and place your order on the same call.">
+{tracking_js()}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  {css_vars}
+{BASE_CSS}
+  .wordmark{{display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.35rem;color:var(--ink);letter-spacing:-.02em}}
+  .wordmark svg{{width:34px;height:34px}}
+  .provs{{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:860px;margin:0 auto}}
+  @media(max-width:640px){{.provs{{grid-template-columns:1fr}}}}
+  .prov{{border:1px solid var(--line);border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:8px;align-items:flex-start;background:#fff}}
+</style>
+</head>
+<body>
+<div class="disclose"><strong>Independent authorized retailer for Frontier, Kinetic, Brightspeed and EarthLink.</strong> We are not a cable company or an internet service provider, and we can't access your current account.</div>
+<header>
+  <nav class="nav container">
+    <a class="wordmark" href="#top"><svg viewBox="0 0 32 32" fill="none"><path d="M4 15 16 5l12 10v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z" fill="#0F2A3D"/><path d="M10 23c3-6 9-6 12 0" stroke="#2DC3A4" stroke-width="2.6" stroke-linecap="round"/><circle cx="16" cy="21" r="2.2" fill="#2DC3A4"/></svg>Home Fiber Check</a>
+    <a class="call" href="tel:{TEL}" data-track="header" aria-label="Call {DISPLAY}">{PHONE_SVG}{DISPLAY}</a>
+  </nav>
+</header>
+<section class="hero" id="top">
+  <div class="container" style="grid-template-columns:1fr">
+    <div>
+      <span class="status" id="open-status">Mon&ndash;Fri, 9:15am&ndash;6:30pm ET</span>
+      <h1>Paying too much for cable internet? <em>See if fiber reaches your home.</em></h1>
+      <p class="lead">Fiber is being built street by street. Call us with your address and we'll check every fiber provider we sell there, explain the plans and price, and place your order on the same call.</p>
+      <div class="cta-row">
+        <a class="btn btn-acc btn-lg" href="tel:{TEL}" data-track="hero button">{PHONE_SVG}Call {DISPLAY}</a>
+      </div>
+      <p class="cta-note">Free address check &middot; about 10 minutes</p>
+      <ul class="checks">
+        <li>Free address check</li>
+        <li>No obligation</li>
+        <li>Order placed on the call</li>
+      </ul>
+    </div>
+  </div>
+</section>
+<section id="why">
+  <div class="container">
+    <div class="center"><span class="eyebrow">Why switch to fiber</span></div>
+    <h2 class="center">Fiber does what cable can't</h2>
+    <p class="sub center">Fiber-optic lines run all the way to your home, so speeds hold up when everyone is online.</p>
+    <div class="grid4">{why}</div>
+    <p class="note">Plans, speeds, equipment, pricing and price guarantees are set by each provider, vary by address and can change. Everything is confirmed on the call before you place an order.</p>
+  </div>
+</section>
+<section id="providers" style="background:var(--soft)">
+  <div class="container">
+    <div class="center"><span class="eyebrow">What we can check</span></div>
+    <h2 class="center" style="margin-bottom:26px">Fiber providers we sell</h2>
+    <div class="provs">{provs}</div>
+    <p class="note" style="text-align:center">Not every provider serves every address. We check yours and tell you plainly what's available.</p>
+  </div>
+</section>
+<section id="how">
+  <div class="container">
+    <div class="center"><span class="eyebrow">Simple process</span></div>
+    <h2 class="center">How switching works</h2>
+    <div class="step-grid">
+      <div class="step"><div class="n">1</div><h4>Call us</h4><p>Dial {DISPLAY} and give us your service address.</p></div>
+      <div class="step"><div class="n">2</div><h4>We check fiber</h4><p>We look up every fiber provider we sell at your address, with speeds and prices.</p></div>
+      <div class="step"><div class="n">3</div><h4>You choose</h4><p>We explain the monthly price, any one-time fees and the price guarantee in plain English.</p></div>
+      <div class="step"><div class="n">4</div><h4>Get connected</h4><p>We place the order and help you pick an install date. Keep your current service until fiber is installed.</p></div>
+    </div>
+  </div>
+</section>
+<section id="faq" style="background:var(--soft)">
+  <div class="container faq-wrap">
+    <div class="center"><span class="eyebrow">FAQ</span></div>
+    <h2 class="center" style="margin-bottom:26px">Frequently asked questions</h2>
+    <details open><summary>Are you my cable company?</summary><p>No. We're an independent authorized retailer for Frontier, Kinetic, Brightspeed and EarthLink. We can't see or change your current cable account. For that, contact your current provider.</p></details>
+    <details><summary>Does it cost more to order through you?</summary><p>No. You get the same plans the provider offers at your address. We're paid by the provider when we set up a new customer, which doesn't change what you pay.</p></details>
+    <details><summary>Why don't you list prices?</summary><p>Fiber prices and offers depend on your address and the provider. We'd rather give you the real monthly price for your home on the call than publish a number that turns out to be wrong.</p></details>
+    <details><summary>What if fiber isn't available at my address?</summary><p>We'll tell you plainly. Where fiber hasn't arrived, we can check EarthLink 5G Home Internet on the same call.</p></details>
+    <details><summary>Should I cancel my cable first?</summary><p>No. Keep your current service until your new fiber service is installed and working, then cancel with your old provider.</p></details>
+    <details><summary>What do I need when I call?</summary><p>Just your service address and a rough idea of how your household uses the internet. Most calls take about 10 minutes.</p></details>
+  </div>
+</section>
+<section class="band">
+  <div class="container">
+    <h2>See if fiber reaches your street</h2>
+    <p>Free address check. No obligation. Mon&ndash;Fri, 9:15am&ndash;6:30pm ET.</p>
+    <a class="btn btn-acc btn-lg" href="tel:{TEL}" data-track="bottom band">{PHONE_SVG}Call {DISPLAY}</a>
+  </div>
+</section>
+<section class="legal" id="contact">
+  <div class="container">
+    <div class="box">
+      <h2 id="about">About Us</h2>
+      <p>Home Fiber Check is operated by E Market Hub LLC, an independent sales company and an authorized retailer for Frontier, Kinetic, Brightspeed and EarthLink. We help households check fiber availability and place new orders by phone. We are not an internet service provider or a cable company.</p>
+      <h3>Contact Us</h3>
+      <p>Phone: {DISPLAY}<br>Hours: Monday&ndash;Friday, 9:15am&ndash;6:30pm (ET)</p>
+    </div>
+    <div class="box" id="privacy">
+      <h2>Privacy Policy</h2>
+      <p>We collect what you give us on a call (name, phone number, service address) and standard web and advertising data (such as pages visited, the ad click identifier and whether you tapped our number). We use it to check service at your address, place orders you ask for, and measure our advertising. We share it with the provider you order from and with vendors that help us operate, under confidentiality obligations. We don't sell your personal information. Calls may be routed through a Google call-tracking number and may be recorded. To ask for access, correction or deletion, or to stop calls from us, call {DISPLAY}.</p>
+    </div>
+    <div class="box" id="terms">
+      <h2>Terms</h2>
+      <p>E Market Hub LLC is an independent authorized retailer, not a telecommunications carrier or internet service provider. Service ordered through us is provided, installed, billed and supported by the provider under its own terms. Availability, plans, pricing, speeds, equipment and offers vary by address and can change; final terms are confirmed at the time of order. Checking availability and ordering through us is free.</p>
+    </div>
+  </div>
+</section>
+<footer class="site">
+  <div class="container">
+    <div class="disclaimer">
+      <p><strong>Independent Retailer Disclosure:</strong> This website is operated by E Market Hub LLC, an independent authorized retailer. We are not Frontier, Kinetic, Brightspeed, EarthLink or any cable company, and we are not an internet service provider.</p>
+      <p><strong>Trademarks:</strong> Frontier&reg;, Kinetic&reg;, Brightspeed&reg; and EarthLink&reg; are trademarks of their respective owners, used only to identify the services we are authorized to sell.</p>
+      <p>&copy; 2026 E Market Hub LLC. All rights reserved. Phone: {DISPLAY}</p>
+    </div>
+  </div>
+</footer>
+<a class="sticky-call" href="tel:{TEL}" data-track="sticky bar" aria-label="Call {DISPLAY}">{PHONE_SVG}<span>Call {DISPLAY}<small>Check fiber at your address</small></span></a>
+<script>window.HFC = {{ provider: 'Switch', display: '{DISPLAY}' }}; window.TRACK = {{ provider: 'Switch' }};</script>
+<script src="/assets/lead-config.js"></script>
+<script src="/assets/lead.js"></script>
+<script src="/assets/track.js"></script>
+</body>
+</html>
+'''
+
+
 FAVICON = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0F2A3D"/>'
            '<path d="M6 16 16 8l10 8v9a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z" fill="#fff"/>'
            '<path d="M11 23c2.6-5 7.4-5 10 0" stroke="#2DC3A4" stroke-width="2.4" stroke-linecap="round" fill="none"/>'
@@ -694,6 +844,9 @@ if __name__ == '__main__':
             sp.write_text(brand_page(key, sub), encoding='utf-8')
         print('wrote', ', '.join(f"{b['path']}/{sub}/" for sub in SUBPAGES))
     (HERE / 'index.html').write_text(home_page(), encoding='utf-8')
+    (HERE / 'switch').mkdir(exist_ok=True)
+    (HERE / 'switch' / 'index.html').write_text(switch_page(), encoding='utf-8')
+    print('wrote switch/index.html')
     (HERE / 'favicon.svg').write_text(FAVICON, encoding='utf-8')
     (HERE / 'CNAME').write_text('homefibercheck.live\n')
     (HERE / 'robots.txt').write_text('User-agent: *\nDisallow: /\n')
