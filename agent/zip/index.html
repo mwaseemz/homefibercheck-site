@@ -194,11 +194,11 @@ function otherLines(r){
 
 function alwaysLines(state){
   var vz = FIOS[state]
-    ? ['Verizon Fios or 5G Home.', ' Fios fiber is built in parts of ' + (STATES[state] || state) + ', and 5G Home is often available where Fios isn’t. Check the address in Chuzo.']
-    : ['Verizon 5G Home.', ' No Fios in ' + (STATES[state] || 'this state') + ', but 5G Home is often available. Check the address in Chuzo.'];
+    ? ['Check first: Verizon Fios or 5G Home.', ' Fios fiber is built in parts of ' + (STATES[state] || state) + ', and 5G Home is often available where Fios isn’t. Check the address in Chuzo.']
+    : ['Check first: Verizon 5G Home.', ' No Fios in ' + (STATES[state] || 'this state') + ', but 5G Home is often available. Check the address in Chuzo.'];
   return [
     vz,
-    ['EarthLink 5G Home Internet.', ' Also wireless and often available where there’s no fiber. Check the address in Chuzo.']
+    ['Then: EarthLink 5G Home Internet.', ' If Verizon isn’t available at the address. Also wireless; check it in Chuzo.']
   ];
 }
 
